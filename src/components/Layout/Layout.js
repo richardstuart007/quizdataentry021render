@@ -4,7 +4,6 @@
 import { Typography, AppBar, Toolbar, Avatar, Grid, CardMedia } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 //
 //  Common Sub Components
 //
@@ -61,8 +60,11 @@ export default function Layout({ handlePage, children }) {
   //
   //  Screen Width
   //
+  const ScreenSmall = JSON.parse(sessionStorage.getItem('App_Settings_ScreenSmall'))
+  //
+  //  Styles
+  //
   const theme = useTheme()
-  const ScreenMedium = useMediaQuery(theme.breakpoints.up('sm'))
   //
   //  Title
   //
@@ -122,7 +124,7 @@ export default function Layout({ handlePage, children }) {
               <CardMedia component='img' sx={{ width: 30, height: 30 }} image={Ukraine} alt='' />
             </Grid>
             {/* .......................................................................................... */}
-            {ScreenMedium && <Navigation handlePage={handlePage} />}
+            {!ScreenSmall && <Navigation handlePage={handlePage} />}
             {/* .......................................................................................... */}
           </Grid>
         </Toolbar>
@@ -132,7 +134,7 @@ export default function Layout({ handlePage, children }) {
       {/* .......................................................................................... */}
       <div className={classes.page}>
         <div className={classes.toolbar}></div>
-        {!ScreenMedium && <Navigation handlePage={handlePage} />}
+        {ScreenSmall && <Navigation handlePage={handlePage} />}
         {children}
       </div>
     </div>

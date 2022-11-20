@@ -4,6 +4,7 @@
 import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
 import { CssBaseline } from '@mui/material'
 import { useState } from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 //
 //  Debug Settings
 //
@@ -84,7 +85,12 @@ let g_firstTimeFlag = true
 export default function App() {
   if (debugLog) console.log(`Start APP`)
   const [currentPage, setCurrentPage] = useState('QuestionList')
-
+  //
+  //  Screen Width
+  //
+  const ScreenMedium = useMediaQuery(theme.breakpoints.up('sm'))
+  const ScreenSmall = !ScreenMedium
+  sessionStorage.setItem('App_Settings_ScreenSmall', ScreenSmall)
   //.............................................................................
   //.  Handle Page Change
   //.............................................................................
@@ -125,7 +131,7 @@ export default function App() {
     //------------------------------------------------------
     //  Set Defaults for REMOTE setup
     //------------------------------------------------------
-    let port = '9002'
+    let port = '9102'
     let w_Client = REMOTE_CLIENT
     let w_Database = REMOTE_DATABASE
     let w_Server = REMOTE_SERVER
@@ -137,9 +143,9 @@ export default function App() {
     if (windowport) {
       port = windowport
       //------------------------------------------------------
-      //  9002 - Local Client --> Remote Server --> Remote Database
+      //  9102 - Local Client --> Remote Server --> Remote Database
       //------------------------------------------------------
-      if (port === '9002') {
+      if (port === '9102') {
         w_Client = LOC_REMOTE_REMOTE_CLIENT
         w_Server = REMOTE_SERVER
         w_Database = REMOTE_DATABASE
@@ -155,9 +161,9 @@ export default function App() {
         w_URL = LOC_LOC_REMOTE_SERVERURL
       }
       //------------------------------------------------------
-      //  8002 - Local Client --> Local Server --> Local Database
+      //  8102 - Local Client --> Local Server --> Local Database
       //------------------------------------------------------
-      if (port === '8002') {
+      if (port === '8102') {
         w_Client = LOC_LOC_LOC_CLIENT
         w_Server = LOC_LOC_LOC_SERVER
         w_Database = LOC_LOC_LOC_DATABASE

@@ -1,35 +1,34 @@
 {
-  "name": "quizdataentry21r",
+  "name": "quizdataentry21render",
   "version": "1.21.0",
-  "homepage": "https://richardstuart007.github.io/quizdataentry021r",
+  "description": "Quiz Data Entry",
+  "homepage": "http://.",
   "private": true,
   "dependencies": {
-    "@date-io/date-fns": "^2.13.1",
-    "@emotion/react": "^11.8.2",
-    "@emotion/styled": "^11.8.1",
-    "@mui/icons-material": "^5.5.1",
-    "@mui/lab": "^5.0.0-alpha.74",
-    "@mui/material": "^5.5.2",
-    "@mui/styles": "^5.5.1",
-    "axios": "^0.26.1",
-    "date-fns": "^2.28.0",
+    "@date-io/date-fns": "^2.15.0",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.3",
+    "@mui/lab": "^5.0.0-alpha.97",
+    "@mui/material": "^5.10.3",
+    "@mui/styles": "^5.10.3",
+    "axios": "^1.1.3",
+    "date-fns": "^2.29.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0"
+    "react-scripts": "5.0.1"
   },
   "optionalDependencies": {
     "@types/react": "^17.0.50"
   },
   "scripts": {
-    "start": "set PORT=9002 && react-scripts start",
-    "startremote": "set PORT=9002 && react-scripts start",
+    "start": "set PORT=9102 && react-scripts start",
+    "startremote": "set PORT=9102 && react-scripts start",
     "startlocalremote": "set PORT=9012 && react-scripts start",
-    "startlocal": "set PORT=8002 && react-scripts start",
+    "startlocal": "set PORT=8102 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -53,15 +52,13 @@
   "author": "Richard",
   "license": "ISC",
   "devDependencies": {
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "gh-pages": "^4.0.0"
+    "eslint-plugin-react-hooks": "^4.3.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/richardstuart007/quizdataentry021r.git"
+    "url": "git+https://github.com/richardstuart007/quizdataentry021render.git"
   },
   "bugs": {
-    "url": "https://github.com/richardstuart007/quizdataentry021r/issues"
-  },
-  "description": ""
+    "url": "https://github.com/richardstuart007/quizdataentry021render/issues"
+  }
 }
