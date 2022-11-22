@@ -6,6 +6,15 @@ import { CssBaseline } from '@mui/material'
 import { useState } from 'react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 //
+//  Options
+//
+import OptionsOwner from '../services/OptionsOwner'
+import OptionsGroup1 from '../services/OptionsGroup1'
+import OptionsGroup2 from '../services/OptionsGroup2'
+import OptionsGroup3 from '../services/OptionsGroup3'
+import OptionsRefLinks from '../services/OptionsRefLinks'
+import OptionsWho from '../services/OptionsWho'
+//
 //  Debug Settings
 //
 import debugSettings from '../debug/debugSettings'
@@ -185,6 +194,15 @@ export default function App() {
     //  Session Storage
     //
     sessionStorage.setItem('Nav_Page_Previous', JSON.stringify(''))
+    //
+    //  Initial Data Load
+    //
+    OptionsOwner()
+    OptionsGroup1()
+    OptionsGroup2()
+    OptionsGroup3()
+    OptionsRefLinks()
+    OptionsWho()
   }
   //.............................................................................
   //

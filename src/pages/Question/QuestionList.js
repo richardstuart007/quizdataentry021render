@@ -36,15 +36,6 @@ import useMyTable from '../../components/useMyTable'
 import MyQueryPromise from '../../services/MyQueryPromise'
 import rowCrud from '../../services/rowCrud'
 //
-//  Options
-//
-import OptionsOwner from '../../services/OptionsOwner'
-import OptionsGroup1 from '../../services/OptionsGroup1'
-import OptionsGroup2 from '../../services/OptionsGroup2'
-import OptionsGroup3 from '../../services/OptionsGroup3'
-import OptionsRefLinks from '../../services/OptionsRefLinks'
-import OptionsWho from '../../services/OptionsWho'
-//
 //  Debug Settings
 //
 import debugSettings from '../../debug/debugSettings'
@@ -452,15 +443,6 @@ export default function QuestionList() {
   //  Initial Data Load
   //
   useEffect(() => {
-    OptionsOwner()
-    OptionsGroup1()
-    OptionsGroup2()
-    OptionsGroup3()
-    OptionsRefLinks()
-    OptionsWho()
-    //
-    //  Load form list
-    //
     getRowAllData()
     // eslint-disable-next-line
   }, [])
