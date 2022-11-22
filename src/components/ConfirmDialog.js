@@ -12,10 +12,6 @@ import {
 import makeStyles from '@mui/styles/makeStyles'
 import NotListedLocationIcon from '@mui/icons-material/NotListedLocation'
 //
-//  Debug Settings
-//
-import debugSettings from '../debug/debugSettings'
-//
 //  Controls
 //
 import MyButton from './controls/MyButton'
@@ -49,14 +45,8 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }))
-//
-// Debug Settings
-//
-const debugLog = debugSettings()
 //=====================================================================================
 export default function ConfirmDialog(props) {
-  if (debugLog) console.log('Start ConfirmDialog')
-
   const { confirmDialog, setConfirmDialog } = props
   const classes = useStyles()
 

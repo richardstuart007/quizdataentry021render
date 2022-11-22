@@ -4,10 +4,6 @@
 import { Typography, AppBar, Toolbar, Avatar, Grid } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 //
-//  Debug Settings
-//
-import debugSettings from '../debug/debugSettings'
-//
 //  Styles
 //
 const useStyles = makeStyles(theme => ({
@@ -21,14 +17,8 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(2)
   }
 }))
-//
-// Debug Settings
-//
-const debugLog = debugSettings()
 //=====================================================================================
 export default function Header() {
-  if (debugLog) console.log('Start Header')
-
   const classes = useStyles()
 
   return (

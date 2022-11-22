@@ -34,10 +34,7 @@ import useMyTable from '../../components/useMyTable'
 //  Services
 //
 import MyQueryPromise from '../../services/MyQueryPromise'
-import rowUpsert from '../../services/rowUpsert'
-import rowUpdate from '../../services/rowUpdate'
-import rowDelete from '../../services/rowDelete'
-import rowSelect from '../../services/rowSelect'
+import rowCrud from '../../services/rowCrud'
 //
 //  Options
 //
@@ -80,6 +77,7 @@ const useStyles = makeStyles(theme => ({
 //  Questions Table
 //
 const { SQL_ROWS } = require('../../services/constants.js')
+const sqlTable = 'questions'
 //
 //  Table Heading
 //
@@ -119,13 +117,15 @@ export default function QuestionList() {
     //
     //  Process promise
     //
-    const sqlRows = `FETCH FIRST ${SQL_ROWS} ROWS ONLY`
-    const props = {
-      sqlTable: 'questions',
-      sqlOrderBy: ' order by qid',
-      sqlRows: sqlRows
+    let sqlString = `* from ${sqlTable} order by qid FETCH FIRST ${SQL_ROWS} ROWS ONLY`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
     }
-    var myPromiseGet = MyQueryPromise(rowSelect(props))
+    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -157,13 +157,16 @@ export default function QuestionList() {
   const deleteRowData = qid => {
     if (debugFunStart) console.log('deleteRowData')
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'questions',
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'DELETE',
       sqlWhere: `qid = ${qid}`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -200,18 +203,17 @@ export default function QuestionList() {
     let { qid, ...rowData } = data
     if (debugLog) console.log('Upsert Database rowData ', rowData)
     //
-    //  Build Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'questions',
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPSERT',
       sqlKeyName: ['qowner', 'qkey'],
       sqlRow: rowData
     }
-    //
-    //  Process promise
-    //
-    if (debugLog) console.log('rowUpsert')
-    var myPromiseInsert = MyQueryPromise(rowUpsert(props))
+    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -261,18 +263,17 @@ export default function QuestionList() {
     //
     if (debugLog) console.log('updateRowData Row ', data)
     //
-    //  Populate Props
-    //
-    const props = {
-      sqlTable: 'questions',
-      sqlWhere: `qid = ${data.qid}`,
-      sqlRow: data,
-      sqlID: 'qid'
-    }
-    //
     //  Process promise
     //
-    var myPromiseUpdate = MyQueryPromise(rowUpdate(props))
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPDATE',
+      sqlWhere: `qid = ${data.qid}`,
+      sqlRow: data
+    }
+    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //

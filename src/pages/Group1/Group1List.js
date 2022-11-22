@@ -34,10 +34,7 @@ import useMyTable from '../../components/useMyTable'
 //  Services
 //
 import MyQueryPromise from '../../services/MyQueryPromise'
-import rowUpsert from '../../services/rowUpsert'
-import rowUpdate from '../../services/rowUpdate'
-import rowDelete from '../../services/rowDelete'
-import rowSelect from '../../services/rowSelect'
+import rowCrud from '../../services/rowCrud'
 //
 //  Options
 //
@@ -75,6 +72,7 @@ const useStyles = makeStyles(theme => ({
 //  Group1 Table
 //
 const { SQL_ROWS } = require('../../services/constants.js')
+const sqlTable = 'group1'
 //
 //  Table Heading
 //
@@ -93,7 +91,6 @@ const searchTypeOptions = [
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'Group1List'
-
 //=====================================================================================
 export default function Group1List() {
   //.............................................................................
@@ -104,13 +101,15 @@ export default function Group1List() {
     //
     //  Process promise
     //
-    const sqlRows = `FETCH FIRST ${SQL_ROWS} ROWS ONLY`
-    const props = {
-      sqlTable: 'group1',
-      sqlOrderBy: ' order by g1id',
-      sqlRows: sqlRows
+    let sqlString = `* from ${sqlTable} order by g1id FETCH FIRST ${SQL_ROWS} ROWS ONLY`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
     }
-    var myPromiseGet = MyQueryPromise(rowSelect(props))
+    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -140,13 +139,16 @@ export default function Group1List() {
   const deleteRowData = g1id => {
     if (debugFunStart) console.log('deleteRowData')
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'group1',
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'DELETE',
       sqlWhere: `g1id = '${g1id}'`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -182,18 +184,17 @@ export default function Group1List() {
     let { ...rowData } = data
     if (debugLog) console.log('Upsert Database rowData ', rowData)
     //
-    //  Build Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'group1',
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPSERT',
       sqlKeyName: ['g1id'],
       sqlRow: rowData
     }
-    //
-    //  Process promise
-    //
-    if (debugLog) console.log('rowUpsert')
-    var myPromiseInsert = MyQueryPromise(rowUpsert(props))
+    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -242,19 +243,17 @@ export default function Group1List() {
     //
     if (debugLog) console.log('updateRowData Row ', data)
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'group1',
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPDATE',
       sqlWhere: `g1id = '${data.g1id}'`,
       sqlRow: data
     }
-    if (debugLog) console.log('sqlWhere', props.sqlWhere)
-    if (debugLog) console.log('sqlRow', props.sqlRow)
-    //
-    //  Process promise
-    //
-    var myPromiseUpdate = MyQueryPromise(rowUpdate(props))
+    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //

@@ -5,10 +5,6 @@ import { Dialog, DialogTitle, DialogContent, Typography } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import CloseIcon from '@mui/icons-material/Close'
 //
-//  Debug Settings
-//
-import debugSettings from '../debug/debugSettings'
-//
 //  Controls
 //
 import MyActionButton from './controls/MyActionButton'
@@ -25,13 +21,8 @@ const useStyles = makeStyles(theme => ({
     paddingRight: '0px'
   }
 }))
-//
-// Debug Settings
-//
-const debugLog = debugSettings()
 //=====================================================================================
 export default function Popup(props) {
-  if (debugLog) console.log('Start Popup')
   const { title, children, openPopup, setOpenPopup } = props
   const classes = useStyles()
 

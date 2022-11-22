@@ -34,10 +34,7 @@ import useMyTable from '../../components/useMyTable'
 //  Services
 //
 import MyQueryPromise from '../../services/MyQueryPromise'
-import rowUpsert from '../../services/rowUpsert'
-import rowUpdate from '../../services/rowUpdate'
-import rowDelete from '../../services/rowDelete'
-import rowSelect from '../../services/rowSelect'
+import rowCrud from '../../services/rowCrud'
 //
 //  Options
 //
@@ -75,6 +72,7 @@ const useStyles = makeStyles(theme => ({
 //  Owners Table
 //
 const { SQL_ROWS } = require('../../services/constants.js')
+const sqlTable = 'owner'
 //
 //  Table Heading
 //
@@ -103,13 +101,15 @@ export default function OwnerList() {
     //
     //  Process promise
     //
-    const sqlRows = `FETCH FIRST ${SQL_ROWS} ROWS ONLY`
-    const props = {
-      sqlTable: 'owner',
-      sqlOrderBy: ' order by oowner',
-      sqlRows: sqlRows
+    let sqlString = `* from ${sqlTable} order by oowner FETCH FIRST ${SQL_ROWS} ROWS ONLY`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
     }
-    var myPromiseGet = MyQueryPromise(rowSelect(props))
+    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -141,13 +141,16 @@ export default function OwnerList() {
   const deleteRowData = oowner => {
     if (debugFunStart) console.log('deleteRowData')
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'owner',
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'DELETE',
       sqlWhere: `oowner = '${oowner}'`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -185,18 +188,17 @@ export default function OwnerList() {
     let { ...rowData } = data
     if (debugLog) console.log('Upsert Database rowData ', rowData)
     //
-    //  Build Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'owner',
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPSERT',
       sqlKeyName: ['oowner'],
       sqlRow: rowData
     }
-    //
-    //  Process promise
-    //
-    if (debugLog) console.log('rowUpsert')
-    var myPromiseInsert = MyQueryPromise(rowUpsert(props))
+    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -247,19 +249,17 @@ export default function OwnerList() {
     //
     if (debugLog) console.log('updateRowData Row ', data)
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'owner',
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPDATE',
       sqlWhere: `oowner = '${data.oowner}'`,
       sqlRow: data
     }
-    if (debugLog) console.log('sqlWhere', props.sqlWhere)
-    if (debugLog) console.log('sqlRow', props.sqlRow)
-    //
-    //  Process promise
-    //
-    var myPromiseUpdate = MyQueryPromise(rowUpdate(props))
+    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //

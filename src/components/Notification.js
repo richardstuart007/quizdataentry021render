@@ -5,10 +5,6 @@ import { Snackbar } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import { Alert } from '@mui/material'
 //
-//  Debug Settings
-//
-import debugSettings from '../debug/debugSettings'
-//
 //  Styles
 //
 const useStyles = makeStyles(theme => ({
@@ -16,14 +12,8 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(9)
   }
 }))
-//
-// Debug Settings
-//
-const debugLog = debugSettings()
 //=====================================================================================
 export default function Notification(props) {
-  if (debugLog) console.log('Start Notification')
-
   const { notify, setNotify } = props
   //
   //  Styles

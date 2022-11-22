@@ -12,10 +12,6 @@ import {
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 //
-//  Debug Settings
-//
-import debugSettings from '../debug/debugSettings'
-//
 //  Styles
 //
 const useStyles = makeStyles(theme => ({
@@ -37,12 +33,6 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }))
-//
-// Debug Settings
-//
-const debugLog = debugSettings()
-const debugFunStart = false
-const debugModule = 'useMyTable'
 //=====================================================================================
 export default function useMyTable(records, headCells, filterFn) {
   //.............................................................................
@@ -105,14 +95,12 @@ export default function useMyTable(records, headCells, filterFn) {
   //.  Change Page
   //.....................................................................................
   const handleChangePage = (event, newPage) => {
-    if (debugLog) console.log('newPage ', newPage)
     setPage(newPage)
   }
   //.....................................................................................
   //.  Change Rows per page
   //.....................................................................................
   const handleChangeRowsPerPage = event => {
-    if (debugFunStart) console.log('handleChangeRowsPerPage')
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
@@ -162,24 +150,16 @@ export default function useMyTable(records, headCells, filterFn) {
   //.  Filter, Slice a page, sort
   //.....................................................................................
   const recordsAfterPagingAndSorting = () => {
-    if (debugFunStart) console.log('recordsAfterPagingAndSorting')
-
-    if (debugLog) console.log('page ', page)
-    // setPage(0)
-
     const rtnstableSort = stableSort(filterFn.fn(records), getComparator(order, orderBy)).slice(
       page * rowsPerPage,
       (page + 1) * rowsPerPage
     )
 
-    if (debugLog) console.log('rtnstableSort ', rtnstableSort)
     return rtnstableSort
   }
   //.....................................................................................
   //.  Return Values
   //.....................................................................................
-  if (debugFunStart) console.log(debugModule)
-
   return {
     TblContainer,
     TblHead,

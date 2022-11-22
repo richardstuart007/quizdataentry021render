@@ -17,9 +17,8 @@ import { useMyForm, MyForm } from '../../components/useMyForm'
 //  Services
 //
 import MyQueryPromise from '../../services/MyQueryPromise'
-import rowUpsert from '../../services/rowUpsert'
-import rowDelete from '../../services/rowDelete'
-import rowSelect from '../../services/rowSelect'
+import rowCrud from '../../services/rowCrud'
+const sqlTable = 'hands'
 //
 //  Form Initial Values
 //
@@ -338,11 +337,15 @@ export default function HandEntry(props) {
     //
     //  Process promise
     //
-    const props = {
-      sqlTable: 'hands',
-      sqlWhere: ` where hid = ${hid}`
+    let sqlString = `* from ${sqlTable} where hid = ${hid}`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
     }
-    var myPromiseGet = MyQueryPromise(rowSelect(props))
+    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -384,17 +387,17 @@ export default function HandEntry(props) {
     //
     dbRowPack()
     //
-    //  Build Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'hands',
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPSERT',
       sqlKeyName: ['hid'],
       sqlRow: dbValues
     }
-    //
-    //  Process promise
-    //
-    var myPromiseInsert = MyQueryPromise(rowUpsert(props))
+    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -436,13 +439,16 @@ export default function HandEntry(props) {
   const deleteRowData = () => {
     if (debugFunStart) console.log('deleteRowData')
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'hands',
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'DELETE',
       sqlWhere: `hid = ${hid}`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //

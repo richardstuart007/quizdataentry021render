@@ -33,9 +33,7 @@ import useMyTable from '../../components/useMyTable'
 //  Services
 //
 import MyQueryPromise from '../../services/MyQueryPromise'
-import rowUpdate from '../../services/rowUpdate'
-import rowDelete from '../../services/rowDelete'
-import rowSelect from '../../services/rowSelect'
+import rowCrud from '../../services/rowCrud'
 //
 //  Debug Settings
 //
@@ -69,10 +67,12 @@ const useStyles = makeStyles(theme => ({
 //  Table
 //
 const { SQL_ROWS } = require('../../services/constants.js')
+const sqlTable = 'users'
 //
 //  Table Heading
 //
 const headCells = [
+  { id: 'u_id', label: 'ID' },
   { id: 'u_email', label: 'Email' },
   { id: 'u_name', label: 'Name' },
   { id: 'u_fedid', label: 'Bridge ID' },
@@ -102,13 +102,15 @@ export default function UsersList() {
     //
     //  Process promise
     //
-    const sqlRows = `FETCH FIRST ${SQL_ROWS} ROWS ONLY`
-    const props = {
-      sqlTable: 'users',
-      sqlOrderBy: ' order by u_email',
-      sqlRows: sqlRows
+    let sqlString = `* from ${sqlTable} order by u_id FETCH FIRST ${SQL_ROWS} ROWS ONLY`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
     }
-    var myPromiseGet = MyQueryPromise(rowSelect(props))
+    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -137,14 +139,14 @@ export default function UsersList() {
   //.............................................................................
   //.  DELETE
   //.............................................................................
-  const deleteRowData = email => {
+  const deleteRowData = u_id => {
     if (debugFunStart) console.log('deleteRowData')
     //
     //  Delete users and related files
     //
-    deleteUsers(email)
-    deleteUserspwd(email)
-    deleteUsershistory(email)
+    deleteUsers(u_id)
+    deleteUserspwd(u_id)
+    deleteUsershistory(u_id)
     //
     //  Refresh
     //
@@ -153,16 +155,20 @@ export default function UsersList() {
   //.............................................................................
   //.  DELETE - User
   //.............................................................................
-  const deleteUsers = email => {
+  const deleteUsers = u_id => {
     if (debugFunStart) console.log('deleteUsers')
+
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'users',
-      sqlWhere: `u_email = '${email}'`
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'DELETE',
+      sqlWhere: `u_id = '${u_id}'`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -175,16 +181,20 @@ export default function UsersList() {
   //.............................................................................
   //.  DELETE - Userpwd
   //.............................................................................
-  const deleteUserspwd = email => {
+  const deleteUserspwd = u_id => {
     if (debugFunStart) console.log('deleteUsers')
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
       sqlTable: 'userspwd',
-      sqlWhere: `upemail = '${email}'`
+      sqlAction: 'DELETE',
+      sqlWhere: `upid = '${u_id}'`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+
     //
     //  Resolve Status
     //
@@ -195,18 +205,21 @@ export default function UsersList() {
     return myPromiseDelete
   }
   //.............................................................................
-  //.  DELETE - Userpwd
+  //.  DELETE - UserHistory
   //.............................................................................
-  const deleteUsershistory = email => {
+  const deleteUsershistory = u_id => {
     if (debugFunStart) console.log('deleteUsers')
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'userspwd',
-      sqlWhere: `r_email = '${email}'`
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: 'usershistory',
+      sqlAction: 'DELETE',
+      sqlWhere: `r_uid = '${u_id}'`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -225,20 +238,19 @@ export default function UsersList() {
     //  Data Received
     //
     if (debugLog) console.log('updateRowData Row ', data)
-    //
-    //  Populate Props
-    //
-    const props = {
-      sqlTable: 'users',
-      sqlWhere: `u_email = '${data.u_email}'`,
-      sqlRow: data
-    }
-    if (debugLog) console.log('sqlWhere', props.sqlWhere)
-    if (debugLog) console.log('sqlRow', props.sqlRow)
+
     //
     //  Process promise
     //
-    var myPromiseUpdate = MyQueryPromise(rowUpdate(props))
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPDATE',
+      sqlWhere: `u_id = '${data.u_id}'`,
+      sqlRow: data
+    }
+    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -252,10 +264,10 @@ export default function UsersList() {
         throw Error
       } else {
         //
-        //  Get u_email
+        //  Get u_id
         //
-        const rtn_u_email = data[0].u_email
-        if (debugLog) console.log(`Row (${rtn_u_email}) UPDATED in Database`)
+        const rtn_u_id = data[0].u_id
+        if (debugLog) console.log(`Row (${rtn_u_id}) UPDATED in Database`)
       }
       //
       //  Update State - refetch data
@@ -289,7 +301,7 @@ export default function UsersList() {
     }
   })
   const [openPopup, setOpenPopup] = useState(false)
-  const [searchType, setSearchType] = useState('u_email')
+  const [searchType, setSearchType] = useState('u_name')
   const [searchValue, setSearchValue] = useState('')
   //
   //  Notification
@@ -377,13 +389,13 @@ export default function UsersList() {
   //
   //  Delete Row
   //
-  const onDelete = u_email => {
+  const onDelete = u_id => {
     if (debugFunStart) console.log('onDelete')
     setConfirmDialog({
       ...confirmDialog,
       isOpen: false
     })
-    deleteRowData(u_email)
+    deleteRowData(u_id)
     setNotify({
       isOpen: true,
       message: 'Deleted Successfully',
@@ -469,7 +481,8 @@ export default function UsersList() {
           <TblHead />
           <TableBody>
             {recordsAfterPagingAndSorting().map(row => (
-              <TableRow key={row.u_email}>
+              <TableRow key={row.u_id}>
+                <TableCell>{row.u_id}</TableCell>
                 <TableCell>{row.u_email}</TableCell>
                 <TableCell>{row.u_name}</TableCell>
                 <TableCell>{row.u_fedid}</TableCell>
@@ -493,7 +506,7 @@ export default function UsersList() {
                         title: 'Are you sure to delete this record?',
                         subTitle: "You can't undo this operation",
                         onConfirm: () => {
-                          onDelete(row.u_email)
+                          onDelete(row.u_id)
                         }
                       })
                     }}

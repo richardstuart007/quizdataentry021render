@@ -6,7 +6,8 @@ import debugSettings from '../debug/debugSettings'
 //  Services
 //
 import MyQueryPromise from './MyQueryPromise'
-import rowSelect from './rowSelect'
+import rowCrud from './rowCrud'
+const sqlTable = 'who'
 //
 // Debug Settings
 //
@@ -47,11 +48,15 @@ const OptionsWho = () => {
     //
     //  Process promise
     //
-    const props = {
-      sqlTable: 'who'
+    let sqlString = `* from ${sqlTable}`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
     }
-
-    var myPromiseGet = MyQueryPromise(rowSelect(props))
+    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //

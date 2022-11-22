@@ -17,9 +17,8 @@ import { useMyForm, MyForm } from '../../components/useMyForm'
 //  Services
 //
 import MyQueryPromise from '../../services/MyQueryPromise'
-import rowUpsert from '../../services/rowUpsert'
-import rowDelete from '../../services/rowDelete'
-import rowSelect from '../../services/rowSelect'
+import rowCrud from '../../services/rowCrud'
+const sqlTable = 'bidding'
 //
 //  Form Initial Values
 //
@@ -273,7 +272,6 @@ export default function BiddingEntry(props) {
       fieldRtn = fieldRtn.trim()
       fieldRtn = fieldRtn.toUpperCase()
     }
-
     return fieldRtn
   }
   //.............................................................................
@@ -318,11 +316,15 @@ export default function BiddingEntry(props) {
     //
     //  Process promise
     //
-    const props = {
-      sqlTable: 'bidding',
-      sqlWhere: ` where bid = ${bid}`
+    let sqlString = `* from ${sqlTable} where bid = ${bid}`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
     }
-    var myPromiseGet = MyQueryPromise(rowSelect(props))
+    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -343,13 +345,11 @@ export default function BiddingEntry(props) {
       //
       //  Return
       //
-
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseGet
   }
   //.............................................................................
@@ -362,17 +362,17 @@ export default function BiddingEntry(props) {
     //
     dbRowPack()
     //
-    //  Build Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'bidding',
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPSERT',
       sqlKeyName: ['bid'],
       sqlRow: dbValues
     }
-    //
-    //  Process promise
-    //
-    var myPromiseInsert = MyQueryPromise(rowUpsert(props))
+    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -397,16 +397,11 @@ export default function BiddingEntry(props) {
         //
         dbRowUnPack(row)
       }
-      //
-      //  Return
-      //
-
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseInsert
   }
   //.............................................................................
@@ -415,13 +410,16 @@ export default function BiddingEntry(props) {
   const deleteRowData = () => {
     if (debugFunStart) console.log('deleteRowData')
     //
-    //  Populate Props
+    //  Process promise
     //
-    const props = {
-      sqlTable: 'bidding',
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'DELETE',
       sqlWhere: `bid = ${bid}`
     }
-    var myPromiseDelete = MyQueryPromise(rowDelete(props))
+    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
     //
     //  Resolve Status
     //
@@ -440,13 +438,11 @@ export default function BiddingEntry(props) {
       //
       //  Return
       //
-
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseDelete
   }
   //...................................................................................
@@ -479,7 +475,6 @@ export default function BiddingEntry(props) {
     //
     //  Validate THIS field
     //
-
     return errMessage
   }
   //...................................................................................
@@ -502,7 +497,6 @@ export default function BiddingEntry(props) {
     //
     //  Return Errors flag
     //
-
     return errors
   }
   //...................................................................................
@@ -538,7 +532,6 @@ export default function BiddingEntry(props) {
     //
     //  Return Errors flag
     //
-
     return errors
   }
   //...................................................................................

@@ -3,7 +3,6 @@
 //
 import { Typography, AppBar, Toolbar, Avatar, Grid, CardMedia } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import { useTheme } from '@mui/material/styles'
 //
 //  Common Sub Components
 //
@@ -61,10 +60,6 @@ export default function Layout({ handlePage, children }) {
   //  Screen Width
   //
   const ScreenSmall = JSON.parse(sessionStorage.getItem('App_Settings_ScreenSmall'))
-  //
-  //  Styles
-  //
-  const theme = useTheme()
   //
   //  Title
   //
