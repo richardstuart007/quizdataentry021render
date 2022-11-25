@@ -16,7 +16,7 @@ import { useMyForm, MyForm } from '../../components/useMyForm'
 //
 //  Services
 //
-import MyQueryPromise from '../../services/MyQueryPromise'
+
 import rowCrud from '../../services/rowCrud'
 const sqlTable = 'hands'
 //
@@ -345,7 +345,7 @@ export default function HandEntry(props) {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -397,7 +397,7 @@ export default function HandEntry(props) {
       sqlKeyName: ['hid'],
       sqlRow: dbValues
     }
-    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -448,7 +448,7 @@ export default function HandEntry(props) {
       sqlAction: 'DELETE',
       sqlWhere: `hid = ${hid}`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //

@@ -33,7 +33,7 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import MyQueryPromise from '../../services/MyQueryPromise'
+
 import rowCrud from '../../services/rowCrud'
 //
 //  Debug Settings
@@ -94,212 +94,14 @@ const searchTypeOptions = [
 //
 // Debug Settings
 //
-const debugLog = debugSettings()
+const debugLog = debugSettings(true)
 const debugFunStart = false
 const debugModule = 'QuestionList'
-
-//=====================================================================================
+//...................................................................................
+//.  Main Line
+//...................................................................................
 export default function QuestionList() {
-  //.............................................................................
-  //.  GET ALL
-  //.............................................................................
-  const getRowAllData = () => {
-    if (debugFunStart) console.log('getRowAllData')
-    //
-    //  Process promise
-    //
-    let sqlString = `* from ${sqlTable} order by qid FETCH FIRST ${SQL_ROWS} ROWS ONLY`
-    const rowCrudparams = {
-      axiosMethod: 'post',
-      sqlCaller: debugModule,
-      sqlTable: sqlTable,
-      sqlAction: 'SELECTSQL',
-      sqlString: sqlString
-    }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
-    //
-    //  Resolve Status
-    //
-    myPromiseGet.then(function (data) {
-      if (debugLog) console.log('myPromiseGet data ', data)
-      //
-      //  Update Table
-      //
-      setRecords(data)
-      //
-      //  Filter
-      //
-      handleSearch()
-      //
-      //  Return
-      //
-
-      return
-    })
-    //
-    //  Return Promise
-    //
-
-    return myPromiseGet
-  }
-  //.............................................................................
-  //.  DELETE
-  //.............................................................................
-  const deleteRowData = qid => {
-    if (debugFunStart) console.log('deleteRowData')
-    //
-    //  Process promise
-    //
-    const rowCrudparams = {
-      axiosMethod: 'delete',
-      sqlCaller: debugModule,
-      sqlTable: sqlTable,
-      sqlAction: 'DELETE',
-      sqlWhere: `qid = ${qid}`
-    }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
-    //
-    //  Resolve Status
-    //
-    myPromiseDelete.then(function (data) {
-      if (debugLog) console.log('myPromiseDelete data ', data)
-      //
-      //  Update State - refetch data
-      //
-      getRowAllData()
-      //
-      //  Return
-      //
-
-      return
-    })
-    //
-    //  Return Promise
-    //
-
-    return myPromiseDelete
-  }
-  //.............................................................................
-  //.  INSERT
-  //.............................................................................
-  const insertRowData = data => {
-    if (debugFunStart) console.log('insertRowData')
-    //
-    //  Data Received
-    //
-    if (debugLog) console.log('insertRowData data ', data)
-    //
-    //  Strip out qid as it will be populated by Insert
-    //
-    let { qid, ...rowData } = data
-    if (debugLog) console.log('Upsert Database rowData ', rowData)
-    //
-    //  Process promise
-    //
-    const rowCrudparams = {
-      axiosMethod: 'post',
-      sqlCaller: debugModule,
-      sqlTable: sqlTable,
-      sqlAction: 'UPSERT',
-      sqlKeyName: ['qowner', 'qkey'],
-      sqlRow: rowData
-    }
-    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
-    //
-    //  Resolve Status
-    //
-    myPromiseInsert.then(function (data) {
-      if (debugLog) console.log('myPromiseInsert data ', data)
-      //
-      //  No data returned
-      //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get ID
-        //
-        const rtn_qid = data[0].qid
-        if (debugLog) console.log(`Row (${rtn_qid}) UPSERTED in Database`)
-        //
-        //  Update record for edit with returned data
-        //
-        setRecordForEdit(data[0])
-        if (debugLog) console.log(`recordForEdit `, recordForEdit)
-      }
-      //
-      //  Update State - refetch data
-      //
-      getRowAllData()
-      //
-      //  Return
-      //
-
-      return
-    })
-    //
-    //  Return Promise
-    //
-
-    return myPromiseInsert
-  }
-  //.............................................................................
-  //.  UPDATE
-  //.............................................................................
-  const updateRowData = data => {
-    if (debugFunStart) console.log('updateRowData')
-    //
-    //  Data Received
-    //
-    if (debugLog) console.log('updateRowData Row ', data)
-    //
-    //  Process promise
-    //
-    const rowCrudparams = {
-      axiosMethod: 'post',
-      sqlCaller: debugModule,
-      sqlTable: sqlTable,
-      sqlAction: 'UPDATE',
-      sqlWhere: `qid = ${data.qid}`,
-      sqlRow: data
-    }
-    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
-    //
-    //  Resolve Status
-    //
-    myPromiseUpdate.then(function (data) {
-      if (debugLog) console.log('myPromiseUpdate data ', data)
-      //
-      //  No data
-      //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get QID
-        //
-        const rtn_qid = data[0].qid
-        if (debugLog) console.log(`Row (${rtn_qid}) UPDATED in Database`)
-      }
-      //
-      //  Update State - refetch data
-      //
-      getRowAllData()
-      //
-      //  Return
-      //
-
-      return
-    })
-    //
-    //  Return Promise
-    //
-
-    return myPromiseUpdate
-  }
-  //.............................................................................
+  if (debugFunStart) console.log(debugModule)
   //
   //  Styles
   //
@@ -333,11 +135,203 @@ export default function QuestionList() {
     title: '',
     subTitle: ''
   })
+  //
+  //  Initial Data Load
+  //
+  useEffect(() => {
+    getRowAllData()
+    // eslint-disable-next-line
+  }, [])
+  //
+  //  Populate the Table
+  //
+  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } = useMyTable(
+    records,
+    headCells,
+    filterFn
+  )
   //.............................................................................
-  //
+  //.  GET ALL
+  //.............................................................................
+  function getRowAllData() {
+    if (debugFunStart) console.log('getRowAllData')
+    //
+    //  Process promise
+    //
+    let sqlString = `* from ${sqlTable} order by qid FETCH FIRST ${SQL_ROWS} ROWS ONLY`
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'SELECTSQL',
+      sqlString: sqlString
+    }
+    const myPromiseGet = rowCrud(rowCrudparams)
+    //
+    //  Resolve Status
+    //
+    myPromiseGet.then(function (rtnData) {
+      if (debugLog) console.log('myPromiseGet rtnData ', rtnData)
+      //
+      //  Update Table
+      //
+      setRecords(rtnData)
+      //
+      //  Filter
+      //
+      handleSearch()
+      //
+      //  Return
+      //
+      return
+    })
+    //
+    //  Return Promise
+    //
+    return myPromiseGet
+  }
+  //.............................................................................
+  //.  DELETE
+  //.............................................................................
+  function deleteRowData(qid) {
+    if (debugFunStart) console.log('deleteRowData')
+    //
+    //  Process promise
+    //
+    const rowCrudparams = {
+      axiosMethod: 'delete',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'DELETE',
+      sqlWhere: `qid = ${qid}`
+    }
+    const myPromiseDelete = rowCrud(rowCrudparams)
+    //
+    //  Resolve Status
+    //
+    myPromiseDelete.then(function (rtnData) {
+      if (debugLog) console.log('myPromiseDelete rtnData ', rtnData)
+      //
+      //  Update State - refetch data
+      //
+      getRowAllData()
+      return
+    })
+    //
+    //  Return Promise
+    //
+    return myPromiseDelete
+  }
+  //.............................................................................
+  //.  INSERT
+  //.............................................................................
+  function insertRowData(data) {
+    if (debugFunStart) console.log('insertRowData')
+    if (debugLog) console.log('insertRowData data ', data)
+    //
+    //  Strip out qid as it will be populated by Insert (also choices)
+    //
+    const { qid, ...rowData } = data
+    if (debugLog) console.log('Upsert Database rowData ', rowData)
+    //
+    //  Process promise
+    //
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'INSERT',
+      sqlKeyName: ['qowner', 'qkey'],
+      sqlRow: rowData
+    }
+    const myPromiseInsert = rowCrud(rowCrudparams)
+    //
+    //  Resolve Status
+    //
+    myPromiseInsert.then(function (rtnData) {
+      if (debugLog) console.log('myPromiseInsert rtnData ', rtnData)
+      //
+      //  No data returned
+      //
+      if (!rtnData) {
+        console.log('No Data returned')
+        throw Error
+      } else {
+        //
+        //  Get ID
+        //
+        const rtn_qid = rtnData[0].qid
+        if (debugLog) console.log(`Row (${rtn_qid}) INSERTED in Database`)
+        //
+        //  Update record for edit with returned data
+        //
+        setRecordForEdit(rtnData[0])
+        if (debugLog) console.log(`recordForEdit `, recordForEdit)
+      }
+      //
+      //  Update State - refetch data
+      //
+      getRowAllData()
+      return
+    })
+    //
+    //  Return Promise
+    //
+    return myPromiseInsert
+  }
+  //.............................................................................
+  //.  UPDATE
+  //.............................................................................
+  function updateRowData(data) {
+    if (debugFunStart) console.log('updateRowData')
+    if (debugLog) console.log('Upsert Database data ', data)
+    //
+    //  Strip out qid as it will be populated by Insert (also choices)
+    //
+    const { qid, ...rowData } = data
+    if (debugLog) console.log('Upsert Database rowData ', rowData)
+    //
+    //  Process promise
+    //
+    const rowCrudparams = {
+      axiosMethod: 'post',
+      sqlCaller: debugModule,
+      sqlTable: sqlTable,
+      sqlAction: 'UPDATE',
+      sqlWhere: `qid = ${qid}`,
+      sqlRow: rowData
+    }
+    const myPromiseUpdate = rowCrud(rowCrudparams)
+    //
+    //  Resolve Status
+    //
+    myPromiseUpdate.then(function (rtnData) {
+      if (debugLog) console.log('myPromiseUpdate rtnData ', rtnData)
+      //
+      //  No data
+      //
+      if (!rtnData) {
+        console.log('No Data returned')
+        throw Error
+      } else {
+        const rtn_qid = rtnData[0].qid
+        if (debugLog) console.log(`Row (${rtn_qid}) UPDATED in Database`)
+      }
+      //
+      //  Update State - refetch data
+      //
+      getRowAllData()
+      return
+    })
+    //
+    //  Return Promise
+    //
+    return myPromiseUpdate
+  }
+  //.............................................................................
   //  Search/Filter
-  //
-  const handleSearch = () => {
+  //.............................................................................
+  function handleSearch() {
     if (debugFunStart) console.log('handleSearch')
     setFilterFn({
       fn: items => {
@@ -387,17 +381,14 @@ export default function QuestionList() {
             break
           default:
         }
-        if (debugLog) console.log('itemsFilter ', itemsFilter)
-
         return itemsFilter
       }
     })
   }
   //.............................................................................
-  //
   //  Update Database
-  //
-  const addOrEdit = (row, resetForm) => {
+  //.............................................................................
+  function addOrEdit(row, resetForm) {
     if (debugFunStart) console.log('addOrEdit')
     row.qid === 0 ? insertRowData(row) : updateRowData(row)
 
@@ -408,18 +399,17 @@ export default function QuestionList() {
     })
   }
   //.............................................................................
-  //
   //  Data Entry Popup
-  //
+  //.............................................................................
   const openInPopup = row => {
     if (debugFunStart) console.log('openInPopup')
+    if (debugLog) console.log('recordforedit row ', row)
     setRecordForEdit(row)
     setOpenPopup(true)
   }
   //.............................................................................
-  //
   //  Delete Row
-  //
+  //.............................................................................
   const onDelete = qid => {
     if (debugFunStart) console.log('onDelete')
     setConfirmDialog({
@@ -434,27 +424,6 @@ export default function QuestionList() {
     })
   }
 
-  //...................................................................................
-  //.  Main Line
-  //...................................................................................
-
-  if (debugFunStart) console.log(debugModule)
-  //
-  //  Initial Data Load
-  //
-  useEffect(() => {
-    getRowAllData()
-    // eslint-disable-next-line
-  }, [])
-  //.............................................................................
-  //
-  //  Populate the Table
-  //
-  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } = useMyTable(
-    records,
-    headCells,
-    filterFn
-  )
   //...................................................................................
   //.  Render the form
   //...................................................................................

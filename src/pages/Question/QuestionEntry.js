@@ -31,10 +31,14 @@ const initialFValues = {
   qowner: 'None',
   qkey: '',
   qdetail: '',
-  qcorrect: '',
-  qbad1: '',
-  qbad2: '',
-  qbad3: '',
+  qans1: '',
+  qans2: '',
+  qans3: '',
+  qans4: '',
+  qpoints1: 10,
+  qpoints2: 0,
+  qpoints3: 0,
+  qpoints4: 0,
   qgroup1: 'None',
   qgroup2: 'None',
   qgroup3: 'None',
@@ -44,57 +48,16 @@ const initialFValues = {
 //
 // Debug Settings
 //
-const debugLog = debugSettings()
+const debugLog = debugSettings(true)
 const debugFunStart = false
 const debugModule = 'QuestionEntry'
-
-//=====================================================================================
+//...................................................................................
+//.  Main Line
+//...................................................................................
 export default function QuestionEntry(props) {
+  if (debugFunStart) console.log(debugModule)
   const { addOrEdit, recordForEdit } = props
-
-  //...................................................................................
-  //
-  // Validate the fields
-  //
-  const validate = (fieldValues = values) => {
-    if (debugFunStart) console.log('validate')
-    if (debugLog) console.log(fieldValues)
-    //
-    //  Load previous errors
-    //
-    let errorsUpd = { ...errors }
-    //
-    //  Validate current field
-    //
-    if ('qowner' in fieldValues)
-      errorsUpd.qowner = fieldValues.qowner === 'None' ? 'This field cannot be None' : ''
-
-    if ('qkey' in fieldValues) errorsUpd.qkey = fieldValues.qkey ? '' : 'This field is required.'
-
-    if ('qdetail' in fieldValues)
-      errorsUpd.qdetail = fieldValues.qdetail ? '' : 'This field is required.'
-
-    if ('qcorrect' in fieldValues)
-      errorsUpd.qcorrect = fieldValues.qcorrect ? '' : 'This field is required.'
-
-    if ('qbad1' in fieldValues) errorsUpd.qbad1 = fieldValues.qbad1 ? '' : 'This field is required.'
-
-    if ('qgroup1' in fieldValues)
-      errorsUpd.qgroup1 = fieldValues.qgroup1 === 'None' ? 'This field cannot be None' : ''
-    //
-    //  Set the errors
-    //
-    setErrors({
-      ...errorsUpd
-    })
-    //
-    //  Check if every element within the errorsUpd object is blank, then return true (valid), but only on submit when the fieldValues=values
-    //
-    if (fieldValues === values) {
-      return Object.values(errorsUpd).every(x => x === '')
-    }
-  }
-  //...................................................................................
+  if (debugLog) console.log('recordForEdit ', recordForEdit)
   //
   //  UseMyForm
   //
@@ -103,52 +66,6 @@ export default function QuestionEntry(props) {
     true,
     validate
   )
-  //...................................................................................
-  //.  Submit form
-  //...................................................................................
-  const handleSubmit = e => {
-    if (debugFunStart) console.log('handleSubmit')
-    e.preventDefault()
-    //
-    //  Validate & Update
-    //
-    if (validate()) {
-      if (debugLog) console.log('values ', values)
-      const { qrefs1, qrefs2, ...UpdateValues } = { ...values }
-      if (debugLog) console.log('UpdateValues ', UpdateValues)
-      //
-      //  Refs are array elements, so need brackets
-      //
-      const qrefs = `{ ${values.qrefs1}, ${values.qrefs2} }`
-      if (debugLog) console.log('qrefs ', qrefs)
-      UpdateValues.qrefs = qrefs
-      //
-      //  Update database
-      //
-      if (debugLog) console.log('UpdateValues ', UpdateValues)
-      addOrEdit(UpdateValues, resetForm)
-    }
-  }
-  //...................................................................................
-  //.  Copy Row
-  //...................................................................................
-  const handleCopy = e => {
-    if (debugFunStart) console.log('handleCopy')
-    e.preventDefault()
-    //
-    //  Reset the form in Add mode
-    //
-    let valuesUpd = { ...values }
-    valuesUpd.qid = 0
-    setValues({
-      ...valuesUpd
-    })
-  }
-  //...................................................................................
-  //.  Main Line
-  //...................................................................................
-
-  if (debugFunStart) console.log(debugModule)
   //
   //  State
   //
@@ -168,24 +85,44 @@ export default function QuestionEntry(props) {
   useEffect(() => {
     if (debugLog) console.log('useEffect')
     if (debugLog) console.log('recordForEdit ', recordForEdit)
-    let updrecordForEdit = recordForEdit
+    let { qans, qpoints, qrefs, ...inValues } = recordForEdit
+    if (debugLog) console.log(qans, qpoints, qrefs, inValues)
     //
-    //  Refs are an array which must be split into qrefs1 & qrefs2
+    //  Split arrays into fields
     //
     if (recordForEdit) {
-      let qrefs1 = 'None'
-      let qrefs2 = 'None'
-      if (recordForEdit.qrefs[0]) qrefs1 = recordForEdit.qrefs[0]
-      if (recordForEdit.qrefs[1]) qrefs2 = recordForEdit.qrefs[1]
-      updrecordForEdit.qrefs1 = qrefs1
-      updrecordForEdit.qrefs2 = qrefs2
-      if (debugLog) console.log('updrecordForEdit ', updrecordForEdit)
+      //
+      //  array: qrefs
+      //
+      inValues.qrefs1 = 'None'
+      inValues.qrefs2 = 'None'
+      if (qrefs[0]) inValues.qrefs1 = qrefs[0]
+      if (qrefs[1]) inValues.qrefs2 = qrefs[1]
+      //
+      //  array: qans/qpoints
+      //
+      inValues.qans1 = qans[0]
+      inValues.qpoints1 = qpoints[0]
+      inValues.qans2 = qans[1]
+      inValues.qpoints2 = qpoints[1]
+      inValues.qans3 = ''
+      inValues.qpoints3 = 0
+      inValues.qans4 = ''
+      inValues.qpoints4 = 0
+      if (qans[2]) {
+        inValues.qans3 = qans[2]
+        inValues.qpoints3 = qpoints[2]
+      }
+      if (qans[3]) {
+        inValues.qans4 = qans[3]
+        inValues.qpoints4 = qpoints[3]
+      }
       //
       //  Update form values
       //
-      if (debugLog) console.log('setValues ', updrecordForEdit)
+      if (debugLog) console.log('inValues ', inValues)
       setValues({
-        ...updrecordForEdit
+        ...inValues
       })
     }
     // eslint-disable-next-line
@@ -203,6 +140,116 @@ export default function QuestionEntry(props) {
   //
   let submitButtonText
   actionUpdate ? (submitButtonText = 'Update') : (submitButtonText = 'Add')
+  //...................................................................................
+  // Validate the fields
+  //...................................................................................
+  function validate(fieldValues = values) {
+    //
+    //  Load previous errors
+    //
+    let errorsUpd = { ...errors }
+    //
+    //  Validate current field
+    //
+    if ('qowner' in fieldValues)
+      errorsUpd.qowner = fieldValues.qowner === 'None' ? 'This field cannot be None' : ''
+
+    if ('qkey' in fieldValues) errorsUpd.qkey = fieldValues.qkey ? '' : 'This field is required.'
+
+    if ('qdetail' in fieldValues)
+      errorsUpd.qdetail = fieldValues.qdetail ? '' : 'This field is required.'
+
+    if ('qans1' in fieldValues) errorsUpd.qans1 = fieldValues.qans1 ? '' : 'This field is required.'
+    if ('qans2' in fieldValues) errorsUpd.qans2 = fieldValues.qans2 ? '' : 'This field is required.'
+
+    if ('qgroup1' in fieldValues)
+      errorsUpd.qgroup1 = fieldValues.qgroup1 === 'None' ? 'This field cannot be None' : ''
+    //
+    //  Set the errors
+    //
+    setErrors({
+      ...errorsUpd
+    })
+    //
+    //  Check if every element within the errorsUpd object is blank, then return true (valid), but only on submit when the fieldValues=values
+    //
+    if (fieldValues === values) {
+      return Object.values(errorsUpd).every(x => x === '')
+    }
+  }
+  //...................................................................................
+  //.  Submit form
+  //...................................................................................
+  function handleSubmit(e) {
+    if (debugFunStart) console.log('handleSubmit')
+    e.preventDefault()
+    //
+    //  Validate & Update
+    //
+    if (validate()) {
+      if (debugLog) console.log('values ', values)
+      const {
+        qrefs1,
+        qrefs2,
+        qans1,
+        qans2,
+        qans3,
+        qans4,
+        qpoints1,
+        qpoints2,
+        qpoints3,
+        qpoints4,
+        ...UpdateValues
+      } = { ...values }
+      if (debugLog) console.log('UpdateValues ', UpdateValues)
+      //
+      //  Populate arrays: qrefs
+      //
+      let qrefs = []
+      qrefs[0] = qrefs1
+      qrefs[1] = qrefs2
+      UpdateValues.qrefs = qrefs
+      //
+      //  Populate arrays: qans/qpoints
+      //
+      let qans = []
+      let qpoints = []
+      qans[0] = qans1
+      qpoints[0] = qpoints1
+      qans[1] = qans2
+      qpoints[1] = qpoints2
+      if (qans3 !== '') {
+        qans[2] = qans3
+        qpoints[2] = qpoints3
+      }
+      if (qans4 !== '') {
+        qans[3] = qans4
+        qpoints[3] = qpoints4
+      }
+      UpdateValues.qans = qans
+      UpdateValues.qpoints = qpoints
+      //
+      //  Update database
+      //
+      if (debugLog) console.log('UpdateValues ', UpdateValues)
+      addOrEdit(UpdateValues, resetForm)
+    }
+  }
+  //...................................................................................
+  //.  Copy Row
+  //...................................................................................
+  function handleCopy(e) {
+    if (debugFunStart) console.log('handleCopy')
+    e.preventDefault()
+    //
+    //  Reset the form in Add mode
+    //
+    let valuesUpd = { ...values }
+    valuesUpd.qid = 0
+    setValues({
+      ...valuesUpd
+    })
+  }
   //...................................................................................
   //.  Render the form
   //...................................................................................
@@ -250,43 +297,83 @@ export default function QuestionEntry(props) {
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
-          <Grid item xs={12}>
+          <Grid item xs={11}>
             <MyInput
-              name='qcorrect'
-              label='Correct Answer'
-              value={values.qcorrect}
+              name='qans1'
+              label='Top Answer'
+              value={values.qans1}
               onChange={handleInputChange}
-              error={errors.qcorrect}
+              error={errors.qans1}
+            />
+          </Grid>
+
+          <Grid item xs={1}>
+            <MyInput
+              name='qpoints1'
+              label='Points'
+              value={values.qpoints1}
+              onChange={handleInputChange}
+              error={errors.qpoints1}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
-          <Grid item xs={12}>
+          <Grid item xs={11}>
             <MyInput
-              name='qbad1'
-              label='Bad Answer 1'
-              value={values.qbad1}
+              name='qans2'
+              label='Answer 2'
+              value={values.qans2}
               onChange={handleInputChange}
-              error={errors.qbad1}
+              error={errors.qans2}
+            />
+          </Grid>
+
+          <Grid item xs={1}>
+            <MyInput
+              name='qpoints2'
+              label='Points'
+              value={values.qpoints2}
+              onChange={handleInputChange}
+              error={errors.qpoints2}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
-          <Grid item xs={12}>
+          <Grid item xs={11}>
             <MyInput
-              name='qbad2'
-              label='Bad Answer 2'
-              value={values.qbad2}
+              name='qans3'
+              label='Answer 3'
+              value={values.qans3}
               onChange={handleInputChange}
-              error={errors.qbad2}
+              error={errors.qans3}
+            />
+          </Grid>
+
+          <Grid item xs={1}>
+            <MyInput
+              name='qpoints3'
+              label='Points'
+              value={values.qpoints3}
+              onChange={handleInputChange}
+              error={errors.qpoints3}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
-          <Grid item xs={12}>
+          <Grid item xs={11}>
             <MyInput
-              name='qbad3'
-              label='Bad Answer 3'
-              value={values.qbad3}
+              name='qans4'
+              label='Answer 4'
+              value={values.qans4}
               onChange={handleInputChange}
-              error={errors.qbad3}
+              error={errors.qans4}
+            />
+          </Grid>
+
+          <Grid item xs={1}>
+            <MyInput
+              name='qpoints4'
+              label='Points'
+              value={values.qpoints4}
+              onChange={handleInputChange}
+              error={errors.qpoints4}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}

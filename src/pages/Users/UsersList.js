@@ -32,7 +32,7 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import MyQueryPromise from '../../services/MyQueryPromise'
+
 import rowCrud from '../../services/rowCrud'
 //
 //  Debug Settings
@@ -110,7 +110,7 @@ export default function UsersList() {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -168,7 +168,7 @@ export default function UsersList() {
       sqlAction: 'DELETE',
       sqlWhere: `u_id = '${u_id}'`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -193,7 +193,7 @@ export default function UsersList() {
       sqlAction: 'DELETE',
       sqlWhere: `upid = '${u_id}'`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
 
     //
     //  Resolve Status
@@ -219,7 +219,7 @@ export default function UsersList() {
       sqlAction: 'DELETE',
       sqlWhere: `r_uid = '${u_id}'`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -250,7 +250,7 @@ export default function UsersList() {
       sqlWhere: `u_id = '${data.u_id}'`,
       sqlRow: data
     }
-    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //

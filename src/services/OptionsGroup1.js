@@ -5,7 +5,7 @@ import debugSettings from '../debug/debugSettings'
 //
 //  Services
 //
-import MyQueryPromise from './MyQueryPromise'
+
 import rowCrud from './rowCrud'
 const sqlTable = 'group1'
 //
@@ -26,7 +26,12 @@ const OptionsGroup1 = () => {
     //
     //  Options
     //
-    let Options = []
+    let Options = [
+      {
+        id: 'None',
+        title: 'None'
+      }
+    ]
     data.forEach(item => {
       const itemObj = {
         id: item.g1id,
@@ -56,7 +61,7 @@ const OptionsGroup1 = () => {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //

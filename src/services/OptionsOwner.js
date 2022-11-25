@@ -5,7 +5,7 @@ import debugSettings from '../debug/debugSettings'
 //
 //  Services
 //
-import MyQueryPromise from './MyQueryPromise'
+
 import rowCrud from './rowCrud'
 const sqlTable = 'owner'
 //
@@ -26,7 +26,12 @@ const OptionsOwner = () => {
     //
     //  Options
     //
-    let Options = []
+    let Options = [
+      {
+        id: 'None',
+        title: 'None'
+      }
+    ]
     data.forEach(item => {
       const itemObj = {
         id: item.oowner,
@@ -56,7 +61,7 @@ const OptionsOwner = () => {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //

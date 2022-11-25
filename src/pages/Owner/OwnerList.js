@@ -33,7 +33,7 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import MyQueryPromise from '../../services/MyQueryPromise'
+
 import rowCrud from '../../services/rowCrud'
 //
 //  Options
@@ -109,7 +109,7 @@ export default function OwnerList() {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -150,7 +150,7 @@ export default function OwnerList() {
       sqlAction: 'DELETE',
       sqlWhere: `oowner = '${oowner}'`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -198,7 +198,7 @@ export default function OwnerList() {
       sqlKeyName: ['oowner'],
       sqlRow: rowData
     }
-    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -259,7 +259,7 @@ export default function OwnerList() {
       sqlWhere: `oowner = '${data.oowner}'`,
       sqlRow: data
     }
-    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //

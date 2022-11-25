@@ -33,7 +33,7 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import MyQueryPromise from '../../services/MyQueryPromise'
+
 import rowCrud from '../../services/rowCrud'
 //
 //  Options
@@ -121,7 +121,7 @@ export default function ReflinksList() {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -162,7 +162,7 @@ export default function ReflinksList() {
       sqlAction: 'DELETE',
       sqlWhere: `rref = '${rref}'`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -210,7 +210,7 @@ export default function ReflinksList() {
       sqlKeyName: ['rref'],
       sqlRow: rowData
     }
-    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -269,7 +269,7 @@ export default function ReflinksList() {
       sqlWhere: `rref = '${data.rref}'`,
       sqlRow: data
     }
-    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //

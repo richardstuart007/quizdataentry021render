@@ -16,7 +16,7 @@ import { useMyForm, MyForm } from '../../components/useMyForm'
 //
 //  Services
 //
-import MyQueryPromise from '../../services/MyQueryPromise'
+
 import rowCrud from '../../services/rowCrud'
 const sqlTable = 'bidding'
 //
@@ -324,7 +324,7 @@ export default function BiddingEntry(props) {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -372,7 +372,7 @@ export default function BiddingEntry(props) {
       sqlKeyName: ['bid'],
       sqlRow: dbValues
     }
-    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -419,7 +419,7 @@ export default function BiddingEntry(props) {
       sqlAction: 'DELETE',
       sqlWhere: `bid = ${bid}`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //

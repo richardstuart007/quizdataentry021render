@@ -33,7 +33,6 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import MyQueryPromise from '../../services/MyQueryPromise'
 import rowCrud from '../../services/rowCrud'
 //
 //  Options
@@ -109,7 +108,7 @@ export default function Group3List() {
       sqlAction: 'SELECTSQL',
       sqlString: sqlString
     }
-    const myPromiseGet = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseGet = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -148,7 +147,7 @@ export default function Group3List() {
       sqlAction: 'DELETE',
       sqlWhere: `g3id = '${g3id}'`
     }
-    const myPromiseDelete = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -194,7 +193,7 @@ export default function Group3List() {
       sqlKeyName: ['g3id'],
       sqlRow: rowData
     }
-    const myPromiseInsert = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
@@ -253,7 +252,7 @@ export default function Group3List() {
       sqlWhere: `g3id = '${data.g3id}'`,
       sqlRow: data
     }
-    const myPromiseUpdate = MyQueryPromise(rowCrud(rowCrudparams))
+    const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
