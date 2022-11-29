@@ -132,7 +132,8 @@ export default async function rowCrud(props) {
       //
       //  Data received
       //
-      const rtnValue = rtnObj.rtnValue
+      let rtnValue = false
+      if (rtnObj?.rtnValue) rtnValue = rtnObj.rtnValue
       if (rtnValue) {
         const rtnRows = rtnObj.rtnRows
         return rtnRows
