@@ -121,25 +121,40 @@ export default async function rowCrud(props) {
         sqlOrderByRaw: sqlOrderByRaw
       }
       //
-      //  URL
+      //  Base URL
       //
       const App_Settings_URL = JSON.parse(sessionStorage.getItem('App_Settings_URL'))
+      if (debugLog) console.log('App_Settings_URL ', App_Settings_URL)
+      //
+      //  Full URL
+      //
       const URL = App_Settings_URL + URL_TABLES
+      if (debugLog) console.log('URL ', URL)
+      if (debugLog) console.log(`sqlClient(${sqlClient}) Action(${sqlAction}) Table(${sqlTable}) `)
       //
       //  SQL database
       //
       const rtnObj = await apiAxios(axiosMethod, URL, body)
+      if (debugLog) console.log('rtnObj ', rtnObj)
+      //
+      //  Server Returned null
+      //
+      if (!rtnObj) {
+        console.log(
+          `Server rejected request: sqlClient(${sqlClient}) Action(${sqlAction}) Table(${sqlTable}) `
+        )
+        return []
+      }
       //
       //  Data received
       //
-      let rtnValue = false
-      if (rtnObj?.rtnValue) rtnValue = rtnObj.rtnValue
+      const rtnValue = rtnObj.rtnValue
       if (rtnValue) {
         const rtnRows = rtnObj.rtnRows
         return rtnRows
       }
       //
-      //  No data
+      //  Server returned no data
       //
       console.log(
         `No data received: sqlClient(${sqlClient}) Action(${sqlAction}) Table(${sqlTable}) `
