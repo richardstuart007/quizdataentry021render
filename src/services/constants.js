@@ -7,14 +7,14 @@
 exports.REM_CLIENT1 = 'LOC/REM:12011'
 exports.REM_SERVER1 = 'REMOTE:Render/11011'
 exports.REM_DATABASE1 = 'REMOTE:Elephant/21'
-exports.REM_SERVERURL1 = 'https://dataserver021render.onrender.com'
+exports.REM_SERVERURL1 = 'https://quizserver021render.onrender.com'
 //
 //  Remote/Local --> Remote Server 2 --> Remote Database 2
 //
 exports.REM_CLIENT2 = 'LOC/REM:12022'
 exports.REM_SERVER2 = 'REMOTE:Render/11022'
 exports.REM_DATABASE2 = 'REMOTE:Elephant/21'
-exports.REM_SERVERURL2 = 'https://dataserver021render.onrender.com'
+exports.REM_SERVERURL2 = 'https://quizserver021render.onrender.com'
 //------------------------------------------------------------------------
 //  Local
 //------------------------------------------------------------------------
