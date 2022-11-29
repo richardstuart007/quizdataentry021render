@@ -16,7 +16,6 @@ import { useMyForm, MyForm } from '../../components/useMyForm'
 //
 //  Services
 //
-
 import rowCrud from '../../services/rowCrud'
 const sqlTable = 'bidding'
 //

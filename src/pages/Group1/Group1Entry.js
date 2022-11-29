@@ -30,11 +30,9 @@ let actionUpdate
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'Group1Entry'
-
 //=====================================================================================
 export default function Group1Entry(props) {
   const { addOrEdit, recordForEdit } = props
-
   //...................................................................................
   //
   // Validate the fields

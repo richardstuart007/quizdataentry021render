@@ -5,7 +5,6 @@ import debugSettings from '../debug/debugSettings'
 //
 //  Services
 //
-
 import rowCrud from './rowCrud'
 const sqlTable = 'reflinks'
 //
@@ -14,7 +13,6 @@ const sqlTable = 'reflinks'
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'OptionsRefLinks'
-
 //===================================================================================
 const OptionsRefLinks = () => {
   //...................................................................................

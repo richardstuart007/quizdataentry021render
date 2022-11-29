@@ -30,7 +30,6 @@ let actionUpdate = false
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'WhoEntry'
-
 //=====================================================================================
 export default function WhoEntry(props) {
   const { addOrEdit, recordForEdit } = props

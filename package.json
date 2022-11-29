@@ -22,10 +22,14 @@
     "@types/react": "^17.0.50"
   },
   "scripts": {
-    "start": "set PORT=9102 && react-scripts start",
-    "startremote": "set PORT=9102 && react-scripts start",
-    "startlocalremote": "set PORT=9012 && react-scripts start",
-    "startlocal": "set PORT=8102 && react-scripts start",
+    "start": "react-scripts start",
+    "startremremrem1": "react-scripts start",
+    "startlocremrem1": "set PORT=12011 && react-scripts start",
+    "startlocremrem2": "set PORT=12022 && react-scripts start",
+    "startloclocrem1": "set PORT=12101 && react-scripts start",
+    "startloclocrem2": "set PORT=12202 && react-scripts start",
+    "startloclocloc6": "set PORT=12606 && react-scripts start",
+    "startloclocloc7": "set PORT=12707 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

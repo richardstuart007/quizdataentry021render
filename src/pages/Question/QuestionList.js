@@ -33,7 +33,6 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-
 import rowCrud from '../../services/rowCrud'
 //
 //  Debug Settings
@@ -94,7 +93,7 @@ const searchTypeOptions = [
 //
 // Debug Settings
 //
-const debugLog = debugSettings(true)
+const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'QuestionList'
 //...................................................................................

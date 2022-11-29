@@ -5,7 +5,6 @@ import debugSettings from '../debug/debugSettings'
 //
 //  Services
 //
-
 import rowCrud from './rowCrud'
 const sqlTable = 'group2'
 //
@@ -14,7 +13,6 @@ const sqlTable = 'group2'
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'OptionsGroup2'
-
 //===================================================================================
 const OptionsGroup2 = () => {
   //...................................................................................

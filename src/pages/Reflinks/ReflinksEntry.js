@@ -54,7 +54,6 @@ let actionUpdate = false
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'ReflinksEntry'
-
 //...................................................................................
 //.  Main Line
 //...................................................................................

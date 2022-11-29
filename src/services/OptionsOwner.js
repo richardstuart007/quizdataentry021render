@@ -5,7 +5,6 @@ import debugSettings from '../debug/debugSettings'
 //
 //  Services
 //
-
 import rowCrud from './rowCrud'
 const sqlTable = 'owner'
 //
@@ -14,7 +13,6 @@ const sqlTable = 'owner'
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'OptionsOwner'
-
 //===================================================================================
 const OptionsOwner = () => {
   //...................................................................................

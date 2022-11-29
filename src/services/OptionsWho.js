@@ -5,7 +5,6 @@ import debugSettings from '../debug/debugSettings'
 //
 //  Services
 //
-
 import rowCrud from './rowCrud'
 const sqlTable = 'who'
 //
@@ -14,7 +13,6 @@ const sqlTable = 'who'
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'OptionsWho'
-
 //===================================================================================
 const OptionsWho = () => {
   //...................................................................................

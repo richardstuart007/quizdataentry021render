@@ -30,7 +30,6 @@ let actionUpdate = false
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'Group2Entry'
-
 //=====================================================================================
 export default function Group2Entry(props) {
   const { addOrEdit, recordForEdit } = props

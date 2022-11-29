@@ -30,7 +30,6 @@ let actionUpdate = false
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'OwnerEntry'
-
 //=====================================================================================
 export default function OwnerEntry(props) {
   const { addOrEdit, recordForEdit } = props
