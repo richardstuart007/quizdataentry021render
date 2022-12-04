@@ -33,11 +33,11 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import rowCrud from '../../services/rowCrud'
+import rowCrud from '../../utilities/rowCrud'
 //
 //  Options
 //
-import OptionsWho from '../../services/OptionsWho'
+import createOptions from '../../utilities/createOptions'
 //
 //  Debug Settings
 //
@@ -112,26 +112,21 @@ export default function WhoList() {
     //
     //  Resolve Status
     //
-    myPromiseGet.then(function (data) {
-      if (debugLog) console.log('myPromiseGet data ', data)
+    myPromiseGet.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseGet rtnObj ', rtnObj)
       //
       //  Update Table
       //
-      setRecords(data)
+      setRecords(rtnObj.rtnRows)
       //
       //  Filter
       //
       handleSearch()
-      //
-      //  Return
-      //
-
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseGet
   }
   //.............................................................................
@@ -153,23 +148,18 @@ export default function WhoList() {
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (data) {
-      if (debugLog) console.log('myPromiseDelete data ', data)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsWho()
-      //
-      //  Return
-      //
-
+      updateOptions()
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseDelete
   }
   //.............................................................................
@@ -182,60 +172,46 @@ export default function WhoList() {
     //
     if (debugLog) console.log('insertRowData data ', data)
     //
-    //  Strip out wwho as it will be populated by Insert
-    //
-    let { ...rowData } = data
-    if (debugLog) console.log('Upsert Database rowData ', rowData)
-    //
     //  Process promise
     //
     const rowCrudparams = {
       axiosMethod: 'post',
       sqlCaller: debugModule,
       sqlTable: sqlTable,
-      sqlAction: 'UPSERT',
+      sqlAction: 'INSERT',
       sqlKeyName: ['wwho'],
-      sqlRow: rowData
+      sqlRow: data
     }
     const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseInsert.then(function (data) {
-      if (debugLog) console.log('myPromiseInsert data ', data)
+    myPromiseInsert.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
+      //
+      //  Completion message
+      //
+      setServerMessage(rtnObj.rtnMessage)
       //
       //  No data returned
       //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get ID
-        //
-        const rtn_wwho = data[0].wwho
-        if (debugLog) console.log(`Row (${rtn_wwho}) UPSERTED in Database`)
-        //
-        //  Update record for edit with returned data
-        //
-        setRecordForEdit(data[0])
-        if (debugLog) console.log(`recordForEdit `, recordForEdit)
-      }
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsWho()
-      //
-      //  Return
-      //
-
+      updateOptions()
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseInsert
   }
   //.............................................................................
@@ -248,6 +224,11 @@ export default function WhoList() {
     //
     if (debugLog) console.log('updateRowData Row ', data)
     //
+    //  Strip out KEY as it is not updated
+    //
+    let { wwho, ...nokeyData } = data
+    if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
+    //
     //  Process promise
     //
     const rowCrudparams = {
@@ -255,44 +236,55 @@ export default function WhoList() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'UPDATE',
-      sqlWhere: `wwho = '${data.wwho}'`,
-      sqlRow: data
+      sqlWhere: `wwho = '${wwho}'`,
+      sqlRow: nokeyData
     }
     const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseUpdate.then(function (data) {
-      if (debugLog) console.log('myPromiseUpdate data ', data)
+    myPromiseUpdate.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
       //
-      //  No data
+      //  Completion message
       //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get wwho
-        //
-        const rtn_wwho = data[0].wwho
-        if (debugLog) console.log(`Row (${rtn_wwho}) UPDATED in Database`)
-      }
+      setServerMessage(rtnObj.rtnMessage)
+      //
+      //  No data returned
+      //
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsWho()
-      //
-      //  Return
-      //
-
+      updateOptions()
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseUpdate
+  }
+  //.............................................................................
+  //  Update the Reflinks Options
+  //.............................................................................
+  function updateOptions() {
+    //
+    //  Create options
+    //
+    createOptions({
+      cop_sqlTable: 'who',
+      cop_id: 'wwho',
+      cop_title: 'wtitle',
+      cop_store: 'Data_Options_Who',
+      cop_received: 'Data_Options_Who_Received'
+    })
   }
   //.............................................................................
   //
@@ -312,6 +304,7 @@ export default function WhoList() {
   const [openPopup, setOpenPopup] = useState(false)
   const [searchType, setSearchType] = useState('wwho')
   const [searchValue, setSearchValue] = useState('')
+  const [serverMessage, setServerMessage] = useState('')
   //
   //  Notification
   //
@@ -348,14 +341,15 @@ export default function WhoList() {
         let itemsFilter = items
         switch (searchType) {
           case 'wwho':
-            itemsFilter = items.filter(x => x.wwho === parseInt(searchValue))
+            itemsFilter = items.filter(x =>
+              x.wwho.toLowerCase().includes(searchValue.toLowerCase())
+            )
             break
           case 'wtitle':
             itemsFilter = items.filter(x =>
               x.wtitle.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-
           default:
         }
         if (debugLog) console.log('itemsFilter ', itemsFilter)
@@ -384,6 +378,7 @@ export default function WhoList() {
   //
   const openInPopup = row => {
     if (debugFunStart) console.log('openInPopup')
+    setServerMessage('')
     setRecordForEdit(row)
     setOpenPopup(true)
   }
@@ -482,6 +477,7 @@ export default function WhoList() {
             variant='outlined'
             startIcon={<AddIcon />}
             onClick={() => {
+              setServerMessage('')
               setOpenPopup(true)
               setRecordForEdit(null)
             }}
@@ -526,7 +522,11 @@ export default function WhoList() {
         <TblPagination />
       </Paper>
       <Popup title='Who Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        <WhoEntry recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+        <WhoEntry
+          recordForEdit={recordForEdit}
+          addOrEdit={addOrEdit}
+          serverMessage={serverMessage}
+        />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

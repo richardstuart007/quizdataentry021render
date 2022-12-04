@@ -33,11 +33,11 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import rowCrud from '../../services/rowCrud'
+import rowCrud from '../../utilities/rowCrud'
 //
 //  Options
 //
-import OptionsRefLinks from '../../services/OptionsRefLinks'
+import createOptions from '../../utilities/createOptions'
 //
 //  Debug Settings
 //
@@ -77,10 +77,10 @@ const sqlTable = 'reflinks'
 //
 const headCells = [
   { id: 'rid', label: 'ID' },
-  { id: 'rowner', label: 'Owner' },
-  { id: 'rgroup1', label: 'Group' },
   { id: 'rref', label: 'Reference' },
   { id: 'rdesc', label: 'Description' },
+  { id: 'rowner', label: 'Owner' },
+  { id: 'rgroup1', label: 'Group' },
   { id: 'rlink', label: 'Link' },
   { id: 'rwho', label: 'Who' },
   { id: 'rtype', label: 'Type' },
@@ -102,8 +102,60 @@ const searchTypeOptions = [
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'ReflinksList'
-//=====================================================================================
+//.............................................................................
+//.  Main Line
+//.............................................................................
 export default function ReflinksList() {
+  if (debugFunStart) console.log(debugModule)
+  //
+  //  Styles
+  //
+  const classes = useStyles()
+  //
+  //  State
+  //
+  const [recordForEdit, setRecordForEdit] = useState(null)
+  const [records, setRecords] = useState([])
+  const [filterFn, setFilterFn] = useState({
+    fn: items => {
+      return items
+    }
+  })
+  const [openPopup, setOpenPopup] = useState(false)
+  const [searchType, setSearchType] = useState('rref')
+  const [searchValue, setSearchValue] = useState('')
+  const [serverMessage, setServerMessage] = useState('')
+  //
+  //  Notification
+  //
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: '',
+    severity: 'info'
+  })
+  //
+  //  Confirm Delete dialog box
+  //
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    subTitle: ''
+  })
+  //
+  //  Initial Data Load
+  //
+  useEffect(() => {
+    getRowAllData()
+    // eslint-disable-next-line
+  }, [])
+  //
+  //  Populate the Table
+  //
+  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } = useMyTable(
+    records,
+    headCells,
+    filterFn
+  )
   //.............................................................................
   //.  GET ALL
   //.............................................................................
@@ -124,32 +176,27 @@ export default function ReflinksList() {
     //
     //  Resolve Status
     //
-    myPromiseGet.then(function (data) {
-      if (debugLog) console.log('myPromiseGet data ', data)
+    myPromiseGet.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseGet rtnObj ', rtnObj)
       //
       //  Update Table
       //
-      setRecords(data)
+      setRecords(rtnObj.rtnRows)
       //
       //  Filter
       //
       handleSearch()
-      //
-      //  Return
-      //
-
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseGet
   }
   //.............................................................................
   //.  DELETE
   //.............................................................................
-  const deleteRowData = rref => {
+  const deleteRowData = rid => {
     if (debugFunStart) console.log('deleteRowData')
     //
     //  Process promise
@@ -159,29 +206,24 @@ export default function ReflinksList() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'DELETE',
-      sqlWhere: `rref = '${rref}'`
+      sqlWhere: `rid = '${rid}'`
     }
     const myPromiseDelete = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (data) {
-      if (debugLog) console.log('myPromiseDelete data ', data)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsRefLinks()
-      //
-      //  Return
-      //
-
+      updateOptions()
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseDelete
   }
   //.............................................................................
@@ -194,10 +236,10 @@ export default function ReflinksList() {
     //
     if (debugLog) console.log('insertRowData data ', data)
     //
-    //  Strip out rref as it will be populated by Insert
+    //  Strip out KEY as it will be populated by Insert
     //
-    let { rid, ...rowData } = data
-    if (debugLog) console.log('Upsert Database rowData ', rowData)
+    let { rid, ...nokeyData } = data
+    if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
     //
     //  Process promise
     //
@@ -205,42 +247,35 @@ export default function ReflinksList() {
       axiosMethod: 'post',
       sqlCaller: debugModule,
       sqlTable: sqlTable,
-      sqlAction: 'UPSERT',
+      sqlAction: 'INSERT',
       sqlKeyName: ['rref'],
-      sqlRow: rowData
+      sqlRow: nokeyData
     }
     const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseInsert.then(function (data) {
-      if (debugLog) console.log('myPromiseInsert data ', data)
+    myPromiseInsert.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
+      //
+      //  Completion message
+      //
+      setServerMessage(rtnObj.rtnMessage)
       //
       //  No data returned
       //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get ID
-        //
-        const rtn_id = data[0].rid
-        if (debugLog) console.log(`Row (${rtn_id}) UPSERTED in Database`)
-        //
-        //  Update record for edit with returned data
-        //
-        setRecordForEdit(data[0])
-        if (debugLog) console.log(`recordForEdit `, recordForEdit)
-      }
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsRefLinks()
-      //
-      //  Return
-      //
+      updateOptions()
       return
     })
     //
@@ -258,6 +293,11 @@ export default function ReflinksList() {
     //
     if (debugLog) console.log('updateRowData Row ', data)
     //
+    //  Strip out KEY as it is not updated
+    //
+    let { rid, ...nokeyData } = data
+    if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
+    //
     //  Process promise
     //
     const rowCrudparams = {
@@ -265,83 +305,59 @@ export default function ReflinksList() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'UPDATE',
-      sqlWhere: `rref = '${data.rref}'`,
-      sqlRow: data
+      sqlWhere: `rid = '${rid}'`,
+      sqlRow: nokeyData
     }
     const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseUpdate.then(function (data) {
-      if (debugLog) console.log('myPromiseUpdate data ', data)
+    myPromiseUpdate.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
       //
-      //  No data
+      //  Completion message
       //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get rref
-        //
-        const rtn_rref = data[0].rref
-        if (debugLog) console.log(`Row (${rtn_rref}) UPDATED in Database`)
-      }
+      setServerMessage(rtnObj.rtnMessage)
+      //
+      //  No data returned
+      //
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsRefLinks()
-      //
-      //  Return
-      //
-
+      updateOptions()
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseUpdate
   }
   //.............................................................................
-  //
-  //  Styles
-  //
-  const classes = useStyles()
-  //
-  //  State
-  //
-  const [recordForEdit, setRecordForEdit] = useState(null)
-  const [records, setRecords] = useState([])
-  const [filterFn, setFilterFn] = useState({
-    fn: items => {
-      return items
-    }
-  })
-  const [openPopup, setOpenPopup] = useState(false)
-  const [searchType, setSearchType] = useState('rref')
-  const [searchValue, setSearchValue] = useState('')
-  //
-  //  Notification
-  //
-  const [notify, setNotify] = useState({
-    isOpen: false,
-    message: '',
-    severity: 'info'
-  })
-  //
-  //  Confirm Delete dialog box
-  //
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false,
-    title: '',
-    subTitle: ''
-  })
+  //  Update the Reflinks Options
   //.............................................................................
-  //
+  function updateOptions() {
+    //
+    //  Create options
+    //
+    createOptions({
+      cop_sqlTable: 'reflinks',
+      cop_id: 'rref',
+      cop_title: 'rdesc',
+      cop_store: 'Data_Options_Reflinks',
+      cop_received: 'Data_Options_Reflinks_Received'
+    })
+  }
+  //.............................................................................
   //  Search/Filter
-  //
+  //.............................................................................
   const handleSearch = () => {
     if (debugFunStart) console.log('handleSearch')
     setFilterFn({
@@ -399,15 +415,13 @@ export default function ReflinksList() {
           default:
         }
         if (debugLog) console.log('itemsFilter ', itemsFilter)
-
         return itemsFilter
       }
     })
   }
   //.............................................................................
-  //
   //  Update Database
-  //
+  //.............................................................................
   const addOrEdit = (row, resetForm) => {
     if (debugFunStart) console.log('addOrEdit')
     recordForEdit === null ? insertRowData(row) : updateRowData(row)
@@ -419,53 +433,30 @@ export default function ReflinksList() {
     })
   }
   //.............................................................................
-  //
   //  Data Entry Popup
-  //
+  //.............................................................................
   const openInPopup = row => {
     if (debugFunStart) console.log('openInPopup')
+    setServerMessage('')
     setRecordForEdit(row)
     setOpenPopup(true)
   }
   //.............................................................................
-  //
   //  Delete Row
-  //
-  const onDelete = rref => {
+  //.............................................................................
+  const onDelete = rid => {
     if (debugFunStart) console.log('onDelete')
     setConfirmDialog({
       ...confirmDialog,
       isOpen: false
     })
-    deleteRowData(rref)
+    deleteRowData(rid)
     setNotify({
       isOpen: true,
       message: 'Deleted Successfully',
       severity: 'error'
     })
   }
-
-  //...................................................................................
-  //.  Main Line
-  //...................................................................................
-
-  if (debugFunStart) console.log(debugModule)
-  //
-  //  Initial Data Load
-  //
-  useEffect(() => {
-    getRowAllData()
-    // eslint-disable-next-line
-  }, [])
-  //.............................................................................
-  //
-  //  Populate the Table
-  //
-  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } = useMyTable(
-    records,
-    headCells,
-    filterFn
-  )
   //...................................................................................
   //.  Render the form
   //...................................................................................
@@ -523,6 +514,7 @@ export default function ReflinksList() {
             startIcon={<AddIcon />}
             className={classes.newButton}
             onClick={() => {
+              setServerMessage('')
               setOpenPopup(true)
               setRecordForEdit(null)
             }}
@@ -532,12 +524,12 @@ export default function ReflinksList() {
           <TblHead />
           <TableBody>
             {recordsAfterPagingAndSorting().map(row => (
-              <TableRow key={row.rref}>
+              <TableRow key={row.rid}>
                 <TableCell>{row.rid}</TableCell>
-                <TableCell>{row.rowner}</TableCell>
-                <TableCell>{row.rgroup1}</TableCell>
                 <TableCell>{row.rref}</TableCell>
                 <TableCell>{row.rdesc}</TableCell>
+                <TableCell>{row.rowner}</TableCell>
+                <TableCell>{row.rgroup1}</TableCell>
                 <TableCell>{row.rlink}</TableCell>
                 <TableCell>{row.rwho}</TableCell>
                 <TableCell>{row.rtype}</TableCell>
@@ -559,7 +551,7 @@ export default function ReflinksList() {
                         title: 'Are you sure to delete this record?',
                         subTitle: "You can't undo this operation",
                         onConfirm: () => {
-                          onDelete(row.rref)
+                          onDelete(row.rid)
                         }
                       })
                     }}
@@ -572,7 +564,11 @@ export default function ReflinksList() {
         <TblPagination />
       </Paper>
       <Popup title='Reflink Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        <ReflinksEntry recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+        <ReflinksEntry
+          recordForEdit={recordForEdit}
+          addOrEdit={addOrEdit}
+          serverMessage={serverMessage}
+        />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

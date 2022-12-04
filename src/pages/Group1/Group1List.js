@@ -33,11 +33,11 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import rowCrud from '../../services/rowCrud'
+import rowCrud from '../../utilities/rowCrud'
 //
 //  Options
 //
-import OptionsGroup1 from '../../services/OptionsGroup1'
+import createOptions from '../../utilities/createOptions'
 //
 //  Debug Settings
 //
@@ -112,19 +112,16 @@ export default function Group1List() {
     //
     //  Resolve Status
     //
-    myPromiseGet.then(function (data) {
-      if (debugLog) console.log('myPromiseGet data ', data)
+    myPromiseGet.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseGet rtnObj ', rtnObj)
       //
       //  Update Table
       //
-      setRecords(data)
+      setRecords(rtnObj.rtnRows)
       //
       //  Filter
       //
       handleSearch()
-      //
-      //  Return
-      //
       return
     })
     //
@@ -151,16 +148,13 @@ export default function Group1List() {
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (data) {
-      if (debugLog) console.log('myPromiseDelete data ', data)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsGroup1()
-      //
-      //  Return
-      //
+      updateOptions()
       return
     })
     //
@@ -178,53 +172,41 @@ export default function Group1List() {
     //
     if (debugLog) console.log('insertRowData data ', data)
     //
-    //  Strip out g1id as it will be populated by Insert
-    //
-    let { ...rowData } = data
-    if (debugLog) console.log('Upsert Database rowData ', rowData)
-    //
     //  Process promise
     //
     const rowCrudparams = {
       axiosMethod: 'post',
       sqlCaller: debugModule,
       sqlTable: sqlTable,
-      sqlAction: 'UPSERT',
+      sqlAction: 'INSERT',
       sqlKeyName: ['g1id'],
-      sqlRow: rowData
+      sqlRow: data
     }
     const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseInsert.then(function (data) {
-      if (debugLog) console.log('myPromiseInsert data ', data)
+    myPromiseInsert.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
+      //
+      //  Completion message
+      //
+      setServerMessage(rtnObj.rtnMessage)
       //
       //  No data returned
       //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get ID
-        //
-        const rtn_g1id = data[0].g1id
-        if (debugLog) console.log(`Row (${rtn_g1id}) UPSERTED in Database`)
-        //
-        //  Update record for edit with returned data
-        //
-        setRecordForEdit(data[0])
-        if (debugLog) console.log(`recordForEdit `, recordForEdit)
-      }
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsGroup1()
-      //
-      //  Return
-      //
+      updateOptions()
       return
     })
     //
@@ -242,6 +224,10 @@ export default function Group1List() {
     //
     if (debugLog) console.log('updateRowData Row ', data)
     //
+    //  Strip out KEY as it is not updated
+    //
+    let { g1id, ...nokeyData } = data
+    //
     //  Process promise
     //
     const rowCrudparams = {
@@ -249,42 +235,55 @@ export default function Group1List() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'UPDATE',
-      sqlWhere: `g1id = '${data.g1id}'`,
-      sqlRow: data
+      sqlWhere: `g1id = '${g1id}'`,
+      sqlRow: nokeyData
     }
     const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseUpdate.then(function (data) {
-      if (debugLog) console.log('myPromiseUpdate data ', data)
+    myPromiseUpdate.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
       //
-      //  No data
+      //  Completion message
       //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get g1id
-        //
-        const rtn_g1id = data[0].g1id
-        if (debugLog) console.log(`Row (${rtn_g1id}) UPDATED in Database`)
-      }
+      setServerMessage(rtnObj.rtnMessage)
+      //
+      //  No data returned
+      //
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      OptionsGroup1()
-      //
-      //  Return
-      //
+      updateOptions()
       return
     })
     //
     //  Return Promise
     //
     return myPromiseUpdate
+  }
+  //.............................................................................
+  //  Update the Reflinks Options
+  //.............................................................................
+  function updateOptions() {
+    //
+    //  Create options
+    //
+    createOptions({
+      cop_sqlTable: 'group1',
+      cop_id: 'g1id',
+      cop_title: 'g1title',
+      cop_store: 'Data_Options_Group1',
+      cop_received: 'Data_Options_Group1_Received'
+    })
   }
   //.............................................................................
   //
@@ -304,6 +303,7 @@ export default function Group1List() {
   const [openPopup, setOpenPopup] = useState(false)
   const [searchType, setSearchType] = useState('g1id')
   const [searchValue, setSearchValue] = useState('')
+  const [serverMessage, setServerMessage] = useState('')
   //
   //  Notification
   //
@@ -377,6 +377,7 @@ export default function Group1List() {
   //
   const openInPopup = row => {
     if (debugFunStart) console.log('openInPopup')
+    setServerMessage('')
     setRecordForEdit(row)
     setOpenPopup(true)
   }
@@ -475,6 +476,7 @@ export default function Group1List() {
             startIcon={<AddIcon />}
             className={classes.newButton}
             onClick={() => {
+              setServerMessage('')
               setOpenPopup(true)
               setRecordForEdit(null)
             }}
@@ -518,7 +520,11 @@ export default function Group1List() {
         <TblPagination />
       </Paper>
       <Popup title='Group1 Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        <Group1Entry recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+        <Group1Entry
+          recordForEdit={recordForEdit}
+          addOrEdit={addOrEdit}
+          serverMessage={serverMessage}
+        />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

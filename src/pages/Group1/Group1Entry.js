@@ -2,7 +2,7 @@
 //  Libraries
 //
 import { useEffect } from 'react'
-import { Grid } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 //
 //  Debug Settings
 //
@@ -32,7 +32,9 @@ const debugFunStart = false
 const debugModule = 'Group1Entry'
 //=====================================================================================
 export default function Group1Entry(props) {
-  const { addOrEdit, recordForEdit } = props
+  const { addOrEdit, recordForEdit, serverMessage } = props
+  if (debugFunStart) console.log(debugModule)
+  if (debugLog) console.log('props ', props)
   //...................................................................................
   //
   // Validate the fields
@@ -153,6 +155,10 @@ export default function Group1Entry(props) {
               onChange={handleInputChange}
               error={errors.g1title}
             />
+          </Grid>
+          {/*.................................................................................................*/}
+          <Grid item xs={12}>
+            <Typography style={{ color: 'red' }}>{serverMessage}</Typography>
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={2}>

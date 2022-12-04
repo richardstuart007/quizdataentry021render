@@ -2,7 +2,7 @@
 //  Libraries
 //
 import { useEffect } from 'react'
-import { Grid } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 //
 //  Debug Settings
 //
@@ -32,7 +32,9 @@ const debugFunStart = false
 const debugModule = 'OwnerEntry'
 //=====================================================================================
 export default function OwnerEntry(props) {
-  const { addOrEdit, recordForEdit } = props
+  const { addOrEdit, recordForEdit, serverMessage } = props
+  if (debugFunStart) console.log(debugModule)
+  if (debugLog) console.log('props ', props)
 
   //...................................................................................
   //
@@ -154,6 +156,10 @@ export default function OwnerEntry(props) {
               onChange={handleInputChange}
               error={errors.otitle}
             />
+          </Grid>
+          {/*.................................................................................................*/}
+          <Grid item xs={12}>
+            <Typography style={{ color: 'red' }}>{serverMessage}</Typography>
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={2}>

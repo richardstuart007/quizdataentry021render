@@ -2,7 +2,7 @@
 //  Libraries
 //
 import { useEffect } from 'react'
-import { Grid } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 //
 //  Debug Settings
 //
@@ -58,8 +58,9 @@ const debugModule = 'ReflinksEntry'
 //.  Main Line
 //...................................................................................
 export default function ReflinksEntry(props) {
-  const { addOrEdit, recordForEdit } = props
+  const { addOrEdit, recordForEdit, serverMessage } = props
   if (debugFunStart) console.log(debugModule)
+  if (debugLog) console.log('props ', props)
   //
   //  Define the Store
   //
@@ -162,7 +163,6 @@ export default function ReflinksEntry(props) {
       addOrEdit(UpdateValues, resetForm)
     }
   }
-
   //...................................................................................
   //.  Render the form
   //...................................................................................
@@ -255,6 +255,10 @@ export default function ReflinksEntry(props) {
               error={errors.rtype}
               options={OptionsType}
             />
+          </Grid>
+          {/*.................................................................................................*/}
+          <Grid item xs={12}>
+            <Typography style={{ color: 'red' }}>{serverMessage}</Typography>
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={2}>

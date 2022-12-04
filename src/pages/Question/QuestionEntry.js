@@ -2,7 +2,7 @@
 //  Libraries
 //
 import { useEffect, useState } from 'react'
-import { Grid } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 //
 //  Debug Settings
 //
@@ -28,7 +28,7 @@ import Popup from '../../components/Popup'
 //
 const initialFValues = {
   qid: 0,
-  qowner: 'None',
+  qowner: '',
   qkey: '',
   qdetail: '',
   qans1: '',
@@ -39,11 +39,11 @@ const initialFValues = {
   qpoints2: 0,
   qpoints3: 0,
   qpoints4: 0,
-  qgroup1: 'None',
-  qgroup2: 'None',
-  qgroup3: 'None',
-  qrefs1: 'None',
-  qrefs2: 'None'
+  qgroup1: '',
+  qgroup2: '',
+  qgroup3: '',
+  qrefs1: '',
+  qrefs2: ''
 }
 //
 // Debug Settings
@@ -55,9 +55,9 @@ const debugModule = 'QuestionEntry'
 //.  Main Line
 //...................................................................................
 export default function QuestionEntry(props) {
+  const { addOrEdit, recordForEdit, serverMessage } = props
   if (debugFunStart) console.log(debugModule)
-  const { addOrEdit, recordForEdit } = props
-  if (debugLog) console.log('recordForEdit ', recordForEdit)
+  if (debugLog) console.log('props ', props)
   //
   //  UseMyForm
   //
@@ -85,17 +85,17 @@ export default function QuestionEntry(props) {
   useEffect(() => {
     if (debugLog) console.log('useEffect')
     if (debugLog) console.log('recordForEdit ', recordForEdit)
-    let { qans, qpoints, qrefs, ...inValues } = recordForEdit
-    if (debugLog) console.log(qans, qpoints, qrefs, inValues)
     //
     //  Split arrays into fields
     //
     if (recordForEdit) {
+      let { qans, qpoints, qrefs, ...inValues } = recordForEdit
+      if (debugLog) console.log(qans, qpoints, qrefs, inValues)
       //
       //  array: qrefs
       //
-      inValues.qrefs1 = 'None'
-      inValues.qrefs2 = 'None'
+      inValues.qrefs1 = ''
+      inValues.qrefs2 = ''
       if (qrefs[0]) inValues.qrefs1 = qrefs[0]
       if (qrefs[1]) inValues.qrefs2 = qrefs[1]
       //
@@ -152,7 +152,7 @@ export default function QuestionEntry(props) {
     //  Validate current field
     //
     if ('qowner' in fieldValues)
-      errorsUpd.qowner = fieldValues.qowner === 'None' ? 'This field cannot be None' : ''
+      errorsUpd.qowner = fieldValues.qowner ? '' : 'This field is required.'
 
     if ('qkey' in fieldValues) errorsUpd.qkey = fieldValues.qkey ? '' : 'This field is required.'
 
@@ -163,7 +163,7 @@ export default function QuestionEntry(props) {
     if ('qans2' in fieldValues) errorsUpd.qans2 = fieldValues.qans2 ? '' : 'This field is required.'
 
     if ('qgroup1' in fieldValues)
-      errorsUpd.qgroup1 = fieldValues.qgroup1 === 'None' ? 'This field cannot be None' : ''
+      errorsUpd.qgroup1 = fieldValues.qgroup1 ? '' : 'This field is required.'
     //
     //  Set the errors
     //
@@ -434,6 +434,10 @@ export default function QuestionEntry(props) {
               error={errors.qgroup3}
               options={OptionsGroup3}
             />
+          </Grid>
+          {/*.................................................................................................*/}
+          <Grid item xs={12}>
+            <Typography style={{ color: 'red' }}>{serverMessage}</Typography>
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={2}>

@@ -33,7 +33,7 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import rowCrud from '../../services/rowCrud'
+import rowCrud from '../../utilities/rowCrud'
 //
 //  Debug Settings
 //
@@ -118,6 +118,7 @@ export default function QuestionList() {
   const [openPopup, setOpenPopup] = useState(false)
   const [searchType, setSearchType] = useState('qdetail')
   const [searchValue, setSearchValue] = useState('')
+  const [serverMessage, setServerMessage] = useState('')
   //
   //  Notification
   //
@@ -169,19 +170,16 @@ export default function QuestionList() {
     //
     //  Resolve Status
     //
-    myPromiseGet.then(function (rtnData) {
-      if (debugLog) console.log('myPromiseGet rtnData ', rtnData)
+    myPromiseGet.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseGet rtnObj ', rtnObj)
       //
       //  Update Table
       //
-      setRecords(rtnData)
+      setRecords(rtnObj.rtnRows)
       //
       //  Filter
       //
       handleSearch()
-      //
-      //  Return
-      //
       return
     })
     //
@@ -208,8 +206,8 @@ export default function QuestionList() {
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (rtnData) {
-      if (debugLog) console.log('myPromiseDelete rtnData ', rtnData)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       //
       //  Update State - refetch data
       //
@@ -228,10 +226,10 @@ export default function QuestionList() {
     if (debugFunStart) console.log('insertRowData')
     if (debugLog) console.log('insertRowData data ', data)
     //
-    //  Strip out qid as it will be populated by Insert (also choices)
+    //  Strip out KEY as it will be populated by Insert
     //
-    const { qid, ...rowData } = data
-    if (debugLog) console.log('Upsert Database rowData ', rowData)
+    let { qid, ...nokeyData } = data
+    if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
     //
     //  Process promise
     //
@@ -241,32 +239,28 @@ export default function QuestionList() {
       sqlTable: sqlTable,
       sqlAction: 'INSERT',
       sqlKeyName: ['qowner', 'qkey'],
-      sqlRow: rowData
+      sqlRow: nokeyData
     }
     const myPromiseInsert = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseInsert.then(function (rtnData) {
-      if (debugLog) console.log('myPromiseInsert rtnData ', rtnData)
+    myPromiseInsert.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
+      //
+      //  Completion message
+      //
+      setServerMessage(rtnObj.rtnMessage)
       //
       //  No data returned
       //
-      if (!rtnData) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get ID
-        //
-        const rtn_qid = rtnData[0].qid
-        if (debugLog) console.log(`Row (${rtn_qid}) INSERTED in Database`)
-        //
-        //  Update record for edit with returned data
-        //
-        setRecordForEdit(rtnData[0])
-        if (debugLog) console.log(`recordForEdit `, recordForEdit)
-      }
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
@@ -285,10 +279,10 @@ export default function QuestionList() {
     if (debugFunStart) console.log('updateRowData')
     if (debugLog) console.log('Upsert Database data ', data)
     //
-    //  Strip out qid as it will be populated by Insert (also choices)
+    //  Strip out KEY as it is not updated
     //
-    const { qid, ...rowData } = data
-    if (debugLog) console.log('Upsert Database rowData ', rowData)
+    let { qid, ...nokeyData } = data
+    if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
     //
     //  Process promise
     //
@@ -298,24 +292,28 @@ export default function QuestionList() {
       sqlTable: sqlTable,
       sqlAction: 'UPDATE',
       sqlWhere: `qid = ${qid}`,
-      sqlRow: rowData
+      sqlRow: nokeyData
     }
     const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseUpdate.then(function (rtnData) {
-      if (debugLog) console.log('myPromiseUpdate rtnData ', rtnData)
+    myPromiseUpdate.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
       //
-      //  No data
+      //  Completion message
       //
-      if (!rtnData) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        const rtn_qid = rtnData[0].qid
-        if (debugLog) console.log(`Row (${rtn_qid}) UPDATED in Database`)
-      }
+      setServerMessage(rtnObj.rtnMessage)
+      //
+      //  No data returned
+      //
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
@@ -402,7 +400,7 @@ export default function QuestionList() {
   //.............................................................................
   const openInPopup = row => {
     if (debugFunStart) console.log('openInPopup')
-    if (debugLog) console.log('recordforedit row ', row)
+    setServerMessage('')
     setRecordForEdit(row)
     setOpenPopup(true)
   }
@@ -422,7 +420,6 @@ export default function QuestionList() {
       severity: 'error'
     })
   }
-
   //...................................................................................
   //.  Render the form
   //...................................................................................
@@ -480,6 +477,7 @@ export default function QuestionList() {
             startIcon={<AddIcon />}
             className={classes.newButton}
             onClick={() => {
+              setServerMessage('')
               setOpenPopup(true)
               setRecordForEdit(null)
             }}
@@ -527,7 +525,11 @@ export default function QuestionList() {
         <TblPagination />
       </Paper>
       <Popup title='Question Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        <QuestionEntry recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+        <QuestionEntry
+          recordForEdit={recordForEdit}
+          addOrEdit={addOrEdit}
+          serverMessage={serverMessage}
+        />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

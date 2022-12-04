@@ -1,8 +1,8 @@
 //
 //  Libraries
 //
-import { useEffect } from 'react'
-import { Grid } from '@mui/material'
+import { useState, useEffect } from 'react'
+import { Grid, Typography } from '@mui/material'
 //
 //  Debug Settings
 //
@@ -16,7 +16,7 @@ import { useMyForm, MyForm } from '../../components/useMyForm'
 //
 //  Services
 //
-import rowCrud from '../../services/rowCrud'
+import rowCrud from '../../utilities/rowCrud'
 const sqlTable = 'bidding'
 //
 //  Form Initial Values
@@ -327,23 +327,20 @@ export default function BiddingEntry(props) {
     //
     //  Resolve Status
     //
-    myPromiseGet.then(function (data) {
-      if (debugFunStart) console.log('myPromiseGet')
-      if (debugLog) console.log('myPromiseGet Final fulfilled')
+    myPromiseGet.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseGet rtnObj ', rtnObj)
       //
-      //  Update record to edit
+      //  No data returned
       //
-      if (data[0]) {
-        const row = data[0]
-        if (debugLog) console.log('myPromiseGet data ', row)
-        //
-        //  Unpack data from database & update form values
-        //
-        dbRowUnPack(row)
-      }
+      if (!rtnObj.rtnValue) return
       //
-      //  Return
+      //  Returned data
       //
+      const row = rtnObj.rtnRows[0]
+      //
+      //  Unpack data from database & update form values
+      //
+      dbRowUnPack(row)
       return
     })
     //
@@ -375,27 +372,28 @@ export default function BiddingEntry(props) {
     //
     //  Resolve Status
     //
-    myPromiseInsert.then(function (data) {
-      if (debugFunStart) console.log('myPromiseInsert')
-      if (debugLog) console.log('myPromiseInsert Final fulfilled')
+    myPromiseInsert.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
+      //
+      //  Completion message
+      //
+      setServerMessage(rtnObj.rtnMessage)
       //
       //  No data returned
       //
-      if (!data[0]) {
-        console.log('ERROR: No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get ID
-        //
-        const row = data[0]
-        const rtn_bid = row.bid
-        if (debugLog) console.log(`Row (${rtn_bid}) UPSERTED in Database `, row)
-        //
-        //  Unpack data from database & update form values
-        //
-        dbRowUnPack(row)
-      }
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      const row = rtnData[0]
+      //
+      //  Unpack data from database & update form values
+      //
+      dbRowUnPack(row)
+      //
+      //  Update State - refetch data
+      //
       return
     })
     //
@@ -422,21 +420,14 @@ export default function BiddingEntry(props) {
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (data) {
-      if (debugFunStart) console.log('myPromiseDelete')
-      if (debugLog) console.log('myPromiseDelete Final fulfilled')
-
-      const row = data[0]
-      if (debugLog) console.log(`Row (${row.bid}) DELETED in Database `)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       //
       //  Set values to Initial Values
       //
       initialFValues.bid = bid
       setValues(initialFValues)
       g_formValues = { ...initialFValues }
-      //
-      //  Return
-      //
       return
     })
     //
@@ -625,6 +616,8 @@ export default function BiddingEntry(props) {
   //
   const { bid } = props
   initialFValues.bid = bid
+
+  const [serverMessage, setServerMessage] = useState('')
   //
   //  On change of record, set State
   //
@@ -939,6 +932,10 @@ export default function BiddingEntry(props) {
             onChange={handleInputChange}
             error={errors.br7b4}
           />
+        </Grid>
+        {/*.................................................................................................*/}
+        <Grid item xs={12}>
+          <Typography style={{ color: 'red' }}>{serverMessage}</Typography>
         </Grid>
         {/*------------------------------------------------------------------------------ */}
         <Grid item xs={3}>

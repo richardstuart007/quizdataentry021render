@@ -32,7 +32,7 @@ import useMyTable from '../../components/useMyTable'
 //
 //  Services
 //
-import rowCrud from '../../services/rowCrud'
+import rowCrud from '../../utilities/rowCrud'
 //
 //  Debug Settings
 //
@@ -113,26 +113,21 @@ export default function UsersList() {
     //
     //  Resolve Status
     //
-    myPromiseGet.then(function (data) {
-      if (debugLog) console.log('myPromiseGet data ', data)
+    myPromiseGet.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseGet rtnObj ', rtnObj)
       //
       //  Update Table
       //
-      setRecords(data)
+      setRecords(rtnObj.rtnRows)
       //
       //  Filter
       //
       handleSearch()
-      //
-      //  Return
-      //
-
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseGet
   }
   //.............................................................................
@@ -171,8 +166,8 @@ export default function UsersList() {
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (data) {
-      if (debugLog) console.log('myPromiseDelete data ', data)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       return
     })
     return myPromiseDelete
@@ -197,8 +192,8 @@ export default function UsersList() {
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (data) {
-      if (debugLog) console.log('myPromiseDelete data ', data)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       return
     })
     return myPromiseDelete
@@ -222,8 +217,8 @@ export default function UsersList() {
     //
     //  Resolve Status
     //
-    myPromiseDelete.then(function (data) {
-      if (debugLog) console.log('myPromiseDelete data ', data)
+    myPromiseDelete.then(function (rtnObj) {
+      if (debugLog) console.log('myPromiseDelete rtnObj ', rtnObj)
       return
     })
     return myPromiseDelete
@@ -237,7 +232,11 @@ export default function UsersList() {
     //  Data Received
     //
     if (debugLog) console.log('updateRowData Row ', data)
-
+    //
+    //  Strip out KEY as it is not updated
+    //
+    let { u_id, ...nokeyData } = data
+    if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
     //
     //  Process promise
     //
@@ -246,42 +245,38 @@ export default function UsersList() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'UPDATE',
-      sqlWhere: `u_id = '${data.u_id}'`,
-      sqlRow: data
+      sqlWhere: `u_id = '${u_id}'`,
+      sqlRow: nokeyData
     }
     const myPromiseUpdate = rowCrud(rowCrudparams)
     //
     //  Resolve Status
     //
-    myPromiseUpdate.then(function (data) {
-      if (debugLog) console.log('myPromiseUpdate data ', data)
+    myPromiseUpdate.then(function (rtnObj) {
+      if (debugLog) console.log('rtnObj ', rtnObj)
       //
-      //  No data
+      //  Completion message
       //
-      if (!data) {
-        console.log('No Data returned')
-        throw Error
-      } else {
-        //
-        //  Get u_id
-        //
-        const rtn_u_id = data[0].u_id
-        if (debugLog) console.log(`Row (${rtn_u_id}) UPDATED in Database`)
-      }
+      setServerMessage(rtnObj.rtnMessage)
+      //
+      //  No data returned
+      //
+      if (!rtnObj.rtnValue) return
+      //
+      //  Update record for edit with returned data
+      //
+      const rtnData = rtnObj.rtnRows
+      setRecordForEdit(rtnData[0])
+      if (debugLog) console.log(`recordForEdit `, recordForEdit)
       //
       //  Update State - refetch data
       //
       getRowAllData()
-      //
-      //  Return
-      //
-
       return
     })
     //
     //  Return Promise
     //
-
     return myPromiseUpdate
   }
   //.............................................................................
@@ -302,6 +297,7 @@ export default function UsersList() {
   const [openPopup, setOpenPopup] = useState(false)
   const [searchType, setSearchType] = useState('u_name')
   const [searchValue, setSearchValue] = useState('')
+  const [serverMessage, setServerMessage] = useState('')
   //
   //  Notification
   //
@@ -381,6 +377,7 @@ export default function UsersList() {
   //
   const openInPopup = row => {
     if (debugFunStart) console.log('openInPopup')
+    setServerMessage('')
     setRecordForEdit(row)
     setOpenPopup(true)
   }
@@ -518,7 +515,11 @@ export default function UsersList() {
         <TblPagination />
       </Paper>
       <Popup title='Users Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        <UsersEntry recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+        <UsersEntry
+          recordForEdit={recordForEdit}
+          addOrEdit={addOrEdit}
+          serverMessage={serverMessage}
+        />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

@@ -8,12 +8,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 //
 //  Options
 //
-import OptionsOwner from '../services/OptionsOwner'
-import OptionsGroup1 from '../services/OptionsGroup1'
-import OptionsGroup2 from '../services/OptionsGroup2'
-import OptionsGroup3 from '../services/OptionsGroup3'
-import OptionsRefLinks from '../services/OptionsRefLinks'
-import OptionsWho from '../services/OptionsWho'
+import createOptions from '../utilities/createOptions'
+import OptionsGroup1Owner from '../services/options/OptionsGroup1Owner'
 //
 //  Debug Settings
 //
@@ -165,15 +161,69 @@ export default function App() {
     //  Session Storage
     //
     sessionStorage.setItem('Nav_Page_Previous', JSON.stringify(''))
+
     //
     //  Initial Data Load
     //
-    OptionsOwner()
-    OptionsGroup1()
-    OptionsGroup2()
-    OptionsGroup3()
-    OptionsRefLinks()
-    OptionsWho()
+    sessionStorage.setItem('Data_Options_ALL_Received', false)
+    const Promise_Owner = createOptions({
+      cop_sqlTable: 'owner',
+      cop_id: 'oowner',
+      cop_title: 'otitle',
+      cop_store: 'Data_Options_Owner',
+      cop_received: 'Data_Options_Owner_Received'
+    })
+    const Promise_Group1Owner = OptionsGroup1Owner()
+    const Promise_Group1 = createOptions({
+      cop_sqlTable: 'group1',
+      cop_id: 'g1id',
+      cop_title: 'g1title',
+      cop_store: 'Data_Options_Group1',
+      cop_received: 'Data_Options_Group1_Received'
+    })
+    const Promise_Group2 = createOptions({
+      cop_sqlTable: 'group2',
+      cop_id: 'g2id',
+      cop_title: 'g2title',
+      cop_store: 'Data_Options_Group2',
+      cop_received: 'Data_Options_Group2_Received'
+    })
+    const Promise_Group3 = createOptions({
+      cop_sqlTable: 'group3',
+      cop_id: 'g3id',
+      cop_title: 'g3title',
+      cop_store: 'Data_Options_Group3',
+      cop_received: 'Data_Options_Group3_Received'
+    })
+    const Promise_Reflinks = createOptions({
+      cop_sqlTable: 'reflinks',
+      cop_id: 'rref',
+      cop_title: 'rdesc',
+      cop_store: 'Data_Options_Reflinks',
+      cop_received: 'Data_Options_Reflinks_Received'
+    })
+    const Promise_Who = createOptions({
+      cop_sqlTable: 'who',
+      cop_id: 'wwho',
+      cop_title: 'wtitle',
+      cop_store: 'Data_Options_Who',
+      cop_received: 'Data_Options_Who_Received'
+    })
+    //
+    //   Wait for all promises
+    //
+    Promise.all([
+      Promise_Owner,
+      Promise_Group1Owner,
+      Promise_Group1,
+      Promise_Group2,
+      Promise_Group3,
+      Promise_Reflinks,
+      Promise_Who
+    ]).then(values => {
+      if (debugLog) console.log(`Promise values ALL`, values)
+      sessionStorage.setItem('Data_Options_ALL_Received', true)
+    })
   }
   //.............................................................................
   //.  Local Port Overridden - Update Constants

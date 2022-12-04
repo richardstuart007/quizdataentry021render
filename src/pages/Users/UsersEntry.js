@@ -2,7 +2,7 @@
 //  Libraries
 //
 import { useEffect } from 'react'
-import { Grid, Box } from '@mui/material'
+import { Grid, Box, Typography } from '@mui/material'
 //
 //  Debug Settings
 //
@@ -50,7 +50,8 @@ export default function UsersEntry(props) {
   //
   //  Deconstruct props
   //
-  const { addOrEdit, recordForEdit } = props
+  const { addOrEdit, recordForEdit, serverMessage } = props
+  if (debugLog) console.log('props ', props)
   //
   //  On change of record, set State
   //
@@ -284,7 +285,10 @@ export default function UsersEntry(props) {
             </Box>
           </Grid>
           <Grid item xs={9}></Grid>
-
+          {/*.................................................................................................*/}
+          <Grid item xs={12}>
+            <Typography style={{ color: 'red' }}>{serverMessage}</Typography>
+          </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={2}>
             <MyButton type='submit' text={submitButtonText} />

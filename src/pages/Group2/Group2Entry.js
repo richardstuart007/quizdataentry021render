@@ -2,7 +2,7 @@
 //  Libraries
 //
 import { useEffect } from 'react'
-import { Grid } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 //
 //  Debug Settings
 //
@@ -23,7 +23,7 @@ const initialFValues = {
 //
 //  Global Variable
 //
-let actionUpdate = false
+let actionUpdate
 //
 // Debug Settings
 //
@@ -32,8 +32,9 @@ const debugFunStart = false
 const debugModule = 'Group2Entry'
 //=====================================================================================
 export default function Group2Entry(props) {
-  const { addOrEdit, recordForEdit } = props
-
+  const { addOrEdit, recordForEdit, serverMessage } = props
+  if (debugFunStart) console.log(debugModule)
+  if (debugLog) console.log('props ', props)
   //...................................................................................
   //
   // Validate the fields
@@ -116,7 +117,7 @@ export default function Group2Entry(props) {
     // eslint-disable-next-line
   }, [recordForEdit])
   //
-  //  Disable entry, allow for Entry
+  //  Disable/Allow entry
   //
   recordForEdit === null ? (actionUpdate = false) : (actionUpdate = true)
   if (debugLog) console.log('actionUpdate', actionUpdate)
@@ -152,8 +153,12 @@ export default function Group2Entry(props) {
               label='Title'
               value={values.g2title}
               onChange={handleInputChange}
-              error={errors.g2title}
+              error={errors.g1title}
             />
+          </Grid>
+          {/*.................................................................................................*/}
+          <Grid item xs={12}>
+            <Typography style={{ color: 'red' }}>{serverMessage}</Typography>
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={2}>
