@@ -153,7 +153,7 @@ export default function Group3Entry(props) {
               label='Title'
               value={values.g3title}
               onChange={handleInputChange}
-              error={errors.g1title}
+              error={errors.g3title}
             />
           </Grid>
           {/*.................................................................................................*/}

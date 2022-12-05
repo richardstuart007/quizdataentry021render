@@ -76,7 +76,7 @@ const headCells = [
   { id: 'qowner', label: 'Owner' },
   { id: 'qkey', label: 'Key' },
   { id: 'qdetail', label: 'Question' },
-  { id: 'qgroup1', label: 'Group 1' },
+  { id: 'qgroup', label: 'Owner Group' },
   { id: 'qgroup2', label: 'Group 2' },
   { id: 'qgroup3', label: 'Group 3' },
   { id: 'actions', label: 'Actions', disableSorting: true }
@@ -86,7 +86,7 @@ const searchTypeOptions = [
   { id: 'qowner', title: 'Owner' },
   { id: 'qkey', title: 'Key' },
   { id: 'qdetail', title: 'Question' },
-  { id: 'qgroup1', title: 'Group 1' },
+  { id: 'qgroup', title: 'Owner Group' },
   { id: 'qgroup2', title: 'Group 2' },
   { id: 'qgroup3', title: 'Group 3' }
 ]
@@ -361,9 +361,9 @@ export default function QuestionList() {
               x.qdetail.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-          case 'qgroup1':
+          case 'qgroup':
             itemsFilter = items.filter(x =>
-              x.qgroup1.toLowerCase().includes(searchValue.toLowerCase())
+              x.qgroup.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
           case 'qgroup2':
@@ -492,7 +492,7 @@ export default function QuestionList() {
                 <TableCell>{row.qowner}</TableCell>
                 <TableCell>{row.qkey}</TableCell>
                 <TableCell>{row.qdetail}</TableCell>
-                <TableCell>{row.qgroup1}</TableCell>
+                <TableCell>{row.qgroup}</TableCell>
                 <TableCell>{row.qgroup2}</TableCell>
                 <TableCell>{row.qgroup3}</TableCell>
                 <TableCell>

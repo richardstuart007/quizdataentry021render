@@ -39,16 +39,18 @@ const initialFValues = {
   qpoints2: 0,
   qpoints3: 0,
   qpoints4: 0,
-  qgroup1: '',
+  qgroup: '',
   qgroup2: '',
   qgroup3: '',
   qrefs1: '',
   qrefs2: ''
 }
+let Data_Options_OwnerGroup_Subset = []
+let ownerPrevious
 //
 // Debug Settings
 //
-const debugLog = debugSettings()
+const debugLog = debugSettings(true)
 const debugFunStart = false
 const debugModule = 'QuestionEntry'
 //...................................................................................
@@ -74,11 +76,11 @@ export default function QuestionEntry(props) {
   //
   //  Define the Store
   //
-  const OptionsOwner = JSON.parse(sessionStorage.getItem('Data_Options_Owner'))
-  const OptionsGroup1 = JSON.parse(sessionStorage.getItem('Data_Options_Group1'))
-  const OptionsGroup2 = JSON.parse(sessionStorage.getItem('Data_Options_Group2'))
-  const OptionsGroup3 = JSON.parse(sessionStorage.getItem('Data_Options_Group3'))
-  const OptionsReflinks = JSON.parse(sessionStorage.getItem('Data_Options_Reflinks'))
+  const Data_Options_Owner = JSON.parse(sessionStorage.getItem('Data_Options_Owner'))
+  const Data_Options_OwnerGroup = JSON.parse(sessionStorage.getItem('Data_Options_OwnerGroup'))
+  const Data_Options_Group2 = JSON.parse(sessionStorage.getItem('Data_Options_Group2'))
+  const Data_Options_Group3 = JSON.parse(sessionStorage.getItem('Data_Options_Group3'))
+  const Data_Options_Library = JSON.parse(sessionStorage.getItem('Data_Options_Library'))
   //
   //  On change of record, set State
   //
@@ -88,43 +90,7 @@ export default function QuestionEntry(props) {
     //
     //  Split arrays into fields
     //
-    if (recordForEdit) {
-      let { qans, qpoints, qrefs, ...inValues } = recordForEdit
-      if (debugLog) console.log(qans, qpoints, qrefs, inValues)
-      //
-      //  array: qrefs
-      //
-      inValues.qrefs1 = ''
-      inValues.qrefs2 = ''
-      if (qrefs[0]) inValues.qrefs1 = qrefs[0]
-      if (qrefs[1]) inValues.qrefs2 = qrefs[1]
-      //
-      //  array: qans/qpoints
-      //
-      inValues.qans1 = qans[0]
-      inValues.qpoints1 = qpoints[0]
-      inValues.qans2 = qans[1]
-      inValues.qpoints2 = qpoints[1]
-      inValues.qans3 = ''
-      inValues.qpoints3 = 0
-      inValues.qans4 = ''
-      inValues.qpoints4 = 0
-      if (qans[2]) {
-        inValues.qans3 = qans[2]
-        inValues.qpoints3 = qpoints[2]
-      }
-      if (qans[3]) {
-        inValues.qans4 = qans[3]
-        inValues.qpoints4 = qpoints[3]
-      }
-      //
-      //  Update form values
-      //
-      if (debugLog) console.log('inValues ', inValues)
-      setValues({
-        ...inValues
-      })
-    }
+    if (recordForEdit) recordForEdit_unpack()
     // eslint-disable-next-line
   }, [recordForEdit])
   if (debugLog) console.log('recordForEdit ', recordForEdit)
@@ -140,6 +106,104 @@ export default function QuestionEntry(props) {
   //
   let submitButtonText
   actionUpdate ? (submitButtonText = 'Update') : (submitButtonText = 'Add')
+  //
+  //  Set Group Options
+  //
+  if (actionUpdate) {
+    if (ownerPrevious !== recordForEdit.qowner) {
+      ownerPrevious = recordForEdit.qowner
+      if (debugLog) console.log('Data_Options_OwnerGroup_Subset ', Data_Options_OwnerGroup_Subset)
+      Data_Options_OwnerGroup_Subset = loadOwnerGroupSubset(
+        true,
+        recordForEdit.qowner,
+        recordForEdit.qgroup
+      )
+    }
+  }
+  //.............................................................................
+  //.  Unpack record for edit values
+  //.............................................................................
+  function recordForEdit_unpack() {
+    let { qans, qpoints, qrefs, ...inValues } = recordForEdit
+    if (debugLog) console.log(qans, qpoints, qrefs, inValues)
+    //
+    //  array: qrefs
+    //
+    inValues.qrefs1 = ''
+    inValues.qrefs2 = ''
+    if (qrefs[0]) inValues.qrefs1 = qrefs[0]
+    if (qrefs[1]) inValues.qrefs2 = qrefs[1]
+    //
+    //  array: qans/qpoints
+    //
+    inValues.qans1 = qans[0]
+    inValues.qpoints1 = qpoints[0]
+    inValues.qans2 = qans[1]
+    inValues.qpoints2 = qpoints[1]
+    inValues.qans3 = ''
+    inValues.qpoints3 = 0
+    inValues.qans4 = ''
+    inValues.qpoints4 = 0
+    if (qans[2]) {
+      inValues.qans3 = qans[2]
+      inValues.qpoints3 = qpoints[2]
+    }
+    if (qans[3]) {
+      inValues.qans4 = qans[3]
+      inValues.qpoints4 = qpoints[3]
+    }
+    //
+    //  Update form values
+    //
+    if (debugLog) console.log('inValues ', inValues)
+    setValues({
+      ...inValues
+    })
+  }
+  //.............................................................................
+  //.  Load Owner/Group Options
+  //.............................................................................
+  function loadOwnerGroupSubset(InitialLoad, owner, group) {
+    if (debugFunStart) console.log('loadOwnerGroupSubset')
+    if (debugLog) console.log('owner ', owner)
+    if (debugLog) console.log('group ', group)
+    if (debugLog) console.log('Data_Options_OwnerGroup ', Data_Options_OwnerGroup)
+    //
+    //  Select out Owner
+    //
+    let options = []
+    Data_Options_OwnerGroup.forEach(item => {
+      if (item.owner === owner) {
+        const itemObj = {
+          id: item.id,
+          title: item.title
+        }
+        options.push(itemObj)
+      }
+    })
+    //
+    //  If current Group is not in valid value, force first
+    //
+    const valid = options.some(option => option['id'] === group)
+    if (debugLog) console.log(`valid `, valid)
+    if (!valid) {
+      const firstOption = options[0]
+      if (!InitialLoad) {
+        setValues({
+          ...values,
+          qowner: owner,
+          qgroup: firstOption.id
+        })
+        if (debugLog) console.log(`qgroup default to ${firstOption.id}`)
+      }
+    }
+    //
+    //  Save and return
+    //
+    sessionStorage.setItem('Data_Options_OwnerGroup_Subset', JSON.stringify(options))
+    if (debugLog) console.log('Data_Options_OwnerGroup_Subset ', options)
+    return options
+  }
   //...................................................................................
   // Validate the fields
   //...................................................................................
@@ -151,8 +215,15 @@ export default function QuestionEntry(props) {
     //
     //  Validate current field
     //
-    if ('qowner' in fieldValues)
+    if ('qowner' in fieldValues) {
       errorsUpd.qowner = fieldValues.qowner ? '' : 'This field is required.'
+      if (debugLog) console.log('execute Data_Options_OwnerGroup_Subset ')
+      Data_Options_OwnerGroup_Subset = loadOwnerGroupSubset(
+        false,
+        fieldValues.qowner,
+        values.qgroup
+      )
+    }
 
     if ('qkey' in fieldValues) errorsUpd.qkey = fieldValues.qkey ? '' : 'This field is required.'
 
@@ -162,8 +233,8 @@ export default function QuestionEntry(props) {
     if ('qans1' in fieldValues) errorsUpd.qans1 = fieldValues.qans1 ? '' : 'This field is required.'
     if ('qans2' in fieldValues) errorsUpd.qans2 = fieldValues.qans2 ? '' : 'This field is required.'
 
-    if ('qgroup1' in fieldValues)
-      errorsUpd.qgroup1 = fieldValues.qgroup1 ? '' : 'This field is required.'
+    if ('qgroup' in fieldValues)
+      errorsUpd.qgroup = fieldValues.qgroup ? '' : 'This field is required.'
     //
     //  Set the errors
     //
@@ -201,7 +272,6 @@ export default function QuestionEntry(props) {
         qpoints4,
         ...UpdateValues
       } = { ...values }
-      if (debugLog) console.log('UpdateValues ', UpdateValues)
       //
       //  Populate arrays: qrefs
       //
@@ -231,7 +301,6 @@ export default function QuestionEntry(props) {
       //
       //  Update database
       //
-      if (debugLog) console.log('UpdateValues ', UpdateValues)
       addOrEdit(UpdateValues, resetForm)
     }
   }
@@ -259,14 +328,14 @@ export default function QuestionEntry(props) {
         <Grid container>
           <Grid item xs={4}>
             <MySelect
-              key={OptionsOwner.id}
+              key={Data_Options_Owner.id}
               name='qowner'
               label='Owner'
               value={values.qowner}
               onChange={handleInputChange}
               error={errors.qowner}
               disabled={actionUpdate}
-              options={OptionsOwner}
+              options={Data_Options_Owner}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
@@ -379,60 +448,60 @@ export default function QuestionEntry(props) {
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={6}>
             <MySelect
-              key={OptionsReflinks.id}
+              key={Data_Options_Library.id}
               name='qrefs1'
               label='Reference 1'
               value={values.qrefs1}
               onChange={handleInputChange}
               error={errors.qrefs1}
-              options={OptionsReflinks}
+              options={Data_Options_Library}
             />
           </Grid>
           <Grid item xs={6}>
             <MySelect
-              key={OptionsReflinks.id}
+              key={Data_Options_Library.id}
               name='qrefs2'
               label='Reference 2'
               value={values.qrefs2}
               onChange={handleInputChange}
               error={errors.qrefs2}
-              options={OptionsReflinks}
+              options={Data_Options_Library}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={4}>
             <MySelect
-              key={OptionsGroup1.id}
-              name='qgroup1'
-              label='Group 1'
-              value={values.qgroup1}
+              key={Data_Options_OwnerGroup.id}
+              name='qgroup'
+              label='Owner Group'
+              value={values.qgroup}
               onChange={handleInputChange}
-              error={errors.qgroup1}
-              options={OptionsGroup1}
+              error={errors.qgroup}
+              options={Data_Options_OwnerGroup_Subset}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={4}>
             <MySelect
-              key={OptionsGroup2.id}
+              key={Data_Options_Group2.id}
               name='qgroup2'
               label='Group 2'
               value={values.qgroup2}
               onChange={handleInputChange}
               error={errors.qgroup2}
-              options={OptionsGroup2}
+              options={Data_Options_Group2}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={4}>
             <MySelect
-              key={OptionsGroup3.id}
+              key={Data_Options_Group3.id}
               name='qgroup3'
               label='Group 3'
               value={values.qgroup3}
               onChange={handleInputChange}
               error={errors.qgroup3}
-              options={OptionsGroup3}
+              options={Data_Options_Group3}
             />
           </Grid>
           {/*.................................................................................................*/}

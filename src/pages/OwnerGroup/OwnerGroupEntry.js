@@ -12,13 +12,15 @@ import debugSettings from '../../debug/debugSettings'
 //
 import MyButton from '../../components/controls/MyButton'
 import MyInput from '../../components/controls/MyInput'
+import MySelect from '../../components/controls/MySelect'
 import { useMyForm, MyForm } from '../../components/useMyForm'
 //
 //  Form Initial Values
 //
 const initialFValues = {
-  g1id: '',
-  g1title: ''
+  ogowner: '',
+  oggroup: '',
+  ogtitle: ''
 }
 //
 //  Global Variable
@@ -29,44 +31,16 @@ let actionUpdate
 //
 const debugLog = debugSettings()
 const debugFunStart = false
-const debugModule = 'Group1Entry'
-//=====================================================================================
-export default function Group1Entry(props) {
-  const { addOrEdit, recordForEdit, serverMessage } = props
+const debugModule = 'OwnerGroupEntry'
+//...................................................................................
+//.  Main Line
+//...................................................................................
+export default function OwnerGroupEntry(props) {
+  if (debugFunStart) console.log(debugModule)
   if (debugFunStart) console.log(debugModule)
   if (debugLog) console.log('props ', props)
-  //...................................................................................
-  //
-  // Validate the fields
-  //
-  const validate = (fieldValues = values) => {
-    if (debugFunStart) console.log('validate')
-    if (debugLog) console.log(fieldValues)
-    //
-    //  Load previous errors
-    //
-    let errorsUpd = { ...errors }
-    //
-    //  Validate current field
-    //
-    if ('g1id' in fieldValues)
-      errorsUpd.g1id = fieldValues.g1id === '' ? 'This field is required.' : ''
-    if ('g1title' in fieldValues)
-      errorsUpd.g1title = fieldValues.g1title === '' ? 'This field is required.' : ''
-    //
-    //  Set the errors
-    //
-    setErrors({
-      ...errorsUpd
-    })
-    //
-    //  Check if every element within the errorsUpd object is blank, then return true (valid), but only on submit when the fieldValues=values
-    //
-    if (fieldValues === values) {
-      return Object.values(errorsUpd).every(x => x === '')
-    }
-  }
-  //...................................................................................
+
+  const { addOrEdit, recordForEdit, serverMessage } = props
   //
   //  UseMyForm
   //
@@ -75,31 +49,10 @@ export default function Group1Entry(props) {
     true,
     validate
   )
-  //...................................................................................
-  //.  Submit form
-  //...................................................................................
-  const handleSubmit = e => {
-    if (debugFunStart) console.log('handleSubmit')
-    e.preventDefault()
-    //
-    //  Validate & Update
-    //
-    if (validate()) {
-      if (debugLog) console.log('values ', values)
-      const { ...UpdateValues } = { ...values }
-      if (debugLog) console.log('UpdateValues ', UpdateValues)
-      //
-      //  Update database
-      //
-      if (debugLog) console.log('UpdateValues ', UpdateValues)
-      addOrEdit(UpdateValues, resetForm)
-    }
-  }
-  //...................................................................................
-  //.  Main Line
-  //...................................................................................
-
-  if (debugFunStart) console.log(debugModule)
+  //
+  //  Define the Store
+  //
+  const Data_Options_Owner = JSON.parse(sessionStorage.getItem('Data_Options_Owner'))
   //
   //  On change of record, set State
   //
@@ -127,6 +80,58 @@ export default function Group1Entry(props) {
   let submitButtonText
   actionUpdate ? (submitButtonText = 'Update') : (submitButtonText = 'Add')
   //...................................................................................
+  // Validate the fields
+  //...................................................................................
+  function validate(fieldValues = values) {
+    if (debugFunStart) console.log('validate')
+    if (debugLog) console.log(fieldValues)
+    //
+    //  Load previous errors
+    //
+    let errorsUpd = { ...errors }
+    //
+    //  Validate current field
+    //
+    if ('ogowner' in fieldValues)
+      errorsUpd.ogowner = fieldValues.ogowner === '' ? 'This field is required.' : ''
+    if ('oggroup' in fieldValues)
+      errorsUpd.oggroup = fieldValues.oggroup === '' ? 'This field is required.' : ''
+    if ('ogtitle' in fieldValues)
+      errorsUpd.ogtitle = fieldValues.ogtitle === '' ? 'This field is required.' : ''
+    //
+    //  Set the errors
+    //
+    setErrors({
+      ...errorsUpd
+    })
+    //
+    //  Check if every element within the errorsUpd object is blank, then return true (valid), but only on submit when the fieldValues=values
+    //
+    if (fieldValues === values) {
+      return Object.values(errorsUpd).every(x => x === '')
+    }
+  }
+  //...................................................................................
+  //.  Submit form
+  //...................................................................................
+  const handleSubmit = e => {
+    if (debugFunStart) console.log('handleSubmit')
+    e.preventDefault()
+    //
+    //  Validate & Update
+    //
+    if (validate()) {
+      if (debugLog) console.log('values ', values)
+      const { ...UpdateValues } = { ...values }
+      if (debugLog) console.log('UpdateValues ', UpdateValues)
+      //
+      //  Update database
+      //
+      if (debugLog) console.log('UpdateValues ', UpdateValues)
+      addOrEdit(UpdateValues, resetForm)
+    }
+  }
+  //...................................................................................
   //.  Render the form
   //...................................................................................
   return (
@@ -134,26 +139,37 @@ export default function Group1Entry(props) {
       <MyForm onSubmit={handleSubmit}>
         <Grid container>
           {/*------------------------------------------------------------------------------ */}
-
           <Grid item xs={12}>
-            <MyInput
-              name='g1id'
-              label='Group1'
-              value={values.g1id}
+            <MySelect
+              key={Data_Options_Owner.id}
+              name='ogowner'
+              label='Owner'
+              value={values.ogowner}
               onChange={handleInputChange}
-              error={errors.g1id}
+              error={errors.ogowner}
               disabled={actionUpdate}
+              options={Data_Options_Owner}
             />
           </Grid>
-
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={12}>
             <MyInput
-              name='g1title'
-              label='Title'
-              value={values.g1title}
+              name='oggroup'
+              label='Group'
+              value={values.oggroup}
               onChange={handleInputChange}
-              error={errors.g1title}
+              error={errors.oggroup}
+              disabled={actionUpdate}
+            />
+          </Grid>
+          {/*------------------------------------------------------------------------------ */}
+          <Grid item xs={12}>
+            <MyInput
+              name='ogtitle'
+              label='Title'
+              value={values.ogtitle}
+              onChange={handleInputChange}
+              error={errors.ogtitle}
             />
           </Grid>
           {/*.................................................................................................*/}

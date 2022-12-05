@@ -271,7 +271,7 @@ export default function Group2List() {
     return myPromiseUpdate
   }
   //.............................................................................
-  //  Update the Reflinks Options
+  //  Update the Options
   //.............................................................................
   function updateOptions() {
     //

@@ -14,7 +14,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 //
 //  Pages
 //
-import Group1Entry from './Group1Entry'
+import OwnerGroupEntry from './OwnerGroupEntry'
 //
 //  Controls
 //
@@ -68,30 +68,32 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 //
-//  Group1 Table
+//  ownergroup Table
 //
 const { SQL_ROWS } = require('../../services/constants.js')
-const sqlTable = 'group1'
+const sqlTable = 'ownergroup'
 //
 //  Table Heading
 //
 const headCells = [
-  { id: 'g1id', label: 'Group1' },
-  { id: 'g1title', label: 'Title' },
+  { id: 'ogowner', label: 'Owner' },
+  { id: 'oggroup', label: 'Group' },
+  { id: 'ogtitle', label: 'Title' },
   { id: 'actions', label: 'Actions', disableSorting: true }
 ]
 const searchTypeOptions = [
-  { id: 'g1id', title: 'Group1' },
-  { id: 'g1title', title: 'Title' }
+  { id: 'ogowner', title: 'Owner' },
+  { id: 'oggroup', title: 'Group' },
+  { id: 'ogtitle', title: 'Title' }
 ]
 //
 // Debug Settings
 //
 const debugLog = debugSettings()
 const debugFunStart = false
-const debugModule = 'Group1List'
+const debugModule = 'OwnerGroupList'
 //=====================================================================================
-export default function Group1List() {
+export default function OwnerGroupList() {
   //.............................................................................
   //.  GET ALL
   //.............................................................................
@@ -100,7 +102,7 @@ export default function Group1List() {
     //
     //  Process promise
     //
-    let sqlString = `* from ${sqlTable} order by g1id FETCH FIRST ${SQL_ROWS} ROWS ONLY`
+    let sqlString = `*, concat(ogowner,oggroup) as ogkey from ${sqlTable} order by ogowner, oggroup FETCH FIRST ${SQL_ROWS} ROWS ONLY`
     const rowCrudparams = {
       axiosMethod: 'post',
       sqlCaller: debugModule,
@@ -132,7 +134,7 @@ export default function Group1List() {
   //.............................................................................
   //.  DELETE
   //.............................................................................
-  const deleteRowData = g1id => {
+  function deleteRowData(ogowner, oggroup) {
     if (debugFunStart) console.log('deleteRowData')
     //
     //  Process promise
@@ -142,7 +144,7 @@ export default function Group1List() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'DELETE',
-      sqlWhere: `g1id = '${g1id}'`
+      sqlWhere: `ogowner = '${ogowner}' and oggroup = '${oggroup}'`
     }
     const myPromiseDelete = rowCrud(rowCrudparams)
     //
@@ -179,7 +181,7 @@ export default function Group1List() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'INSERT',
-      sqlKeyName: ['g1id'],
+      sqlKeyName: ['ogowner', 'oggroup'],
       sqlRow: data
     }
     const myPromiseInsert = rowCrud(rowCrudparams)
@@ -224,9 +226,9 @@ export default function Group1List() {
     //
     if (debugLog) console.log('updateRowData Row ', data)
     //
-    //  Strip out KEY as it is not updated
+    //  Strip out KEY as it is not updated - remove concatenated field
     //
-    let { g1id, ...nokeyData } = data
+    let { ogowner, oggroup, ogkey, ...nokeyData } = data
     //
     //  Process promise
     //
@@ -235,7 +237,7 @@ export default function Group1List() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'UPDATE',
-      sqlWhere: `g1id = '${g1id}'`,
+      sqlWhere: `ogowner = '${ogowner}' and oggroup = '${oggroup}'`,
       sqlRow: nokeyData
     }
     const myPromiseUpdate = rowCrud(rowCrudparams)
@@ -271,18 +273,19 @@ export default function Group1List() {
     return myPromiseUpdate
   }
   //.............................................................................
-  //  Update the Reflinks Options
+  //  Update the  Options
   //.............................................................................
   function updateOptions() {
     //
     //  Create options
     //
     createOptions({
-      cop_sqlTable: 'group1',
-      cop_id: 'g1id',
-      cop_title: 'g1title',
-      cop_store: 'Data_Options_Group1',
-      cop_received: 'Data_Options_Group1_Received'
+      cop_sqlTable: 'ownergroup',
+      cop_owner: 'ogowner',
+      cop_id: 'oggroup',
+      cop_title: 'ogtitle',
+      cop_store: 'Data_Options_OwnerGroup',
+      cop_received: 'Data_Options_OwnerGroup_Received'
     })
   }
   //.............................................................................
@@ -301,7 +304,7 @@ export default function Group1List() {
     }
   })
   const [openPopup, setOpenPopup] = useState(false)
-  const [searchType, setSearchType] = useState('g1id')
+  const [searchType, setSearchType] = useState('oggroup')
   const [searchValue, setSearchValue] = useState('')
   const [serverMessage, setServerMessage] = useState('')
   //
@@ -339,14 +342,19 @@ export default function Group1List() {
         //
         let itemsFilter = items
         switch (searchType) {
-          case 'g1id':
+          case 'ogowner':
             itemsFilter = items.filter(x =>
-              x.g1id.toLowerCase().includes(searchValue.toLowerCase())
+              x.ogowner.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-          case 'g1title':
+          case 'oggroup':
             itemsFilter = items.filter(x =>
-              x.g1title.toLowerCase().includes(searchValue.toLowerCase())
+              x.oggroup.toLowerCase().includes(searchValue.toLowerCase())
+            )
+            break
+          case 'ogtitle':
+            itemsFilter = items.filter(x =>
+              x.ogtitle.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
 
@@ -385,13 +393,13 @@ export default function Group1List() {
   //
   //  Delete Row
   //
-  const onDelete = g1id => {
+  const onDelete = row => {
     if (debugFunStart) console.log('onDelete')
     setConfirmDialog({
       ...confirmDialog,
       isOpen: false
     })
-    deleteRowData(g1id)
+    deleteRowData(row.ogowner, row.oggroup)
     setNotify({
       isOpen: true,
       message: 'Deleted Successfully',
@@ -425,7 +433,7 @@ export default function Group1List() {
   return (
     <>
       <PageHeader
-        title='Group1'
+        title='OwnerGroup'
         subTitle='Data Entry and Maintenance'
         icon={<PeopleOutlineTwoToneIcon fontSize='large' />}
       />
@@ -486,9 +494,10 @@ export default function Group1List() {
           <TblHead />
           <TableBody>
             {recordsAfterPagingAndSorting().map(row => (
-              <TableRow key={row.g1id}>
-                <TableCell>{row.g1id}</TableCell>
-                <TableCell>{row.g1title}</TableCell>
+              <TableRow key={row.ogkey}>
+                <TableCell>{row.ogowner}</TableCell>
+                <TableCell>{row.oggroup}</TableCell>
+                <TableCell>{row.ogtitle}</TableCell>
 
                 <TableCell>
                   <MyActionButton
@@ -507,7 +516,7 @@ export default function Group1List() {
                         title: 'Are you sure to delete this record?',
                         subTitle: "You can't undo this operation",
                         onConfirm: () => {
-                          onDelete(row.g1id)
+                          onDelete(row)
                         }
                       })
                     }}
@@ -519,8 +528,8 @@ export default function Group1List() {
         </TblContainer>
         <TblPagination />
       </Paper>
-      <Popup title='Group1 Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        <Group1Entry
+      <Popup title='OwnerGroup Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
+        <OwnerGroupEntry
           recordForEdit={recordForEdit}
           addOrEdit={addOrEdit}
           serverMessage={serverMessage}

@@ -18,14 +18,14 @@ import { useMyForm, MyForm } from '../../components/useMyForm'
 //  Form Initial Values
 //
 const initialFValues = {
-  rid: 0,
-  rowner: '',
-  rgroup1: '',
-  rref: '',
-  rdesc: '',
-  rlink: '',
-  rwho: '',
-  rtype: ''
+  lrid: 0,
+  lrowner: '',
+  lrgroup: '',
+  lrref: '',
+  lrdesc: '',
+  lrlink: '',
+  lrwho: '',
+  lrtype: ''
 }
 //
 //  Options
@@ -53,11 +53,11 @@ let actionUpdate = false
 //
 const debugLog = debugSettings()
 const debugFunStart = false
-const debugModule = 'ReflinksEntry'
+const debugModule = 'LibraryEntry'
 //...................................................................................
 //.  Main Line
 //...................................................................................
-export default function ReflinksEntry(props) {
+export default function LibraryEntry(props) {
   const { addOrEdit, recordForEdit, serverMessage } = props
   if (debugFunStart) console.log(debugModule)
   if (debugLog) console.log('props ', props)
@@ -66,7 +66,7 @@ export default function ReflinksEntry(props) {
   //
   const OptionsWho = JSON.parse(sessionStorage.getItem('Data_Options_Who'))
   const OptionsOwner = JSON.parse(sessionStorage.getItem('Data_Options_Owner'))
-  const OptionsGroup1 = JSON.parse(sessionStorage.getItem('Data_Options_Group1'))
+  const OptionsOwnerGroup = JSON.parse(sessionStorage.getItem('Data_Options_OwnerGroup'))
   //
   //  On change of record, set State
   //
@@ -107,20 +107,20 @@ export default function ReflinksEntry(props) {
     //
     //  Validate current field
     //
-    if ('rref' in fieldValues)
-      errorsUpd.rref = fieldValues.rref === '' ? 'This field is required.' : ''
-    if ('rowner' in fieldValues)
-      errorsUpd.rowner = fieldValues.rowner === '' ? 'This field is required.' : ''
-    if ('rgroup1' in fieldValues)
-      errorsUpd.rgroup1 = fieldValues.rgroup1 === '' ? 'This field is required.' : ''
-    if ('rdesc' in fieldValues)
-      errorsUpd.rdesc = fieldValues.rdesc === '' ? 'This field is required.' : ''
-    if ('rlink' in fieldValues)
-      errorsUpd.rlink = fieldValues.rlink === '' ? 'This field is required.' : ''
-    if ('rtype' in fieldValues)
-      errorsUpd.rtype = fieldValues.rtype === '' ? 'This field is required.' : ''
-    if ('rwho' in fieldValues)
-      errorsUpd.rwho = fieldValues.rwho === '' ? 'This field is required.' : ''
+    if ('lrref' in fieldValues)
+      errorsUpd.lrref = fieldValues.lrref === '' ? 'This field is required.' : ''
+    if ('lrowner' in fieldValues)
+      errorsUpd.lrowner = fieldValues.lrowner === '' ? 'This field is required.' : ''
+    if ('lrgroup' in fieldValues)
+      errorsUpd.lrgroup = fieldValues.lrgroup === '' ? 'This field is required.' : ''
+    if ('lrdesc' in fieldValues)
+      errorsUpd.lrdesc = fieldValues.lrdesc === '' ? 'This field is required.' : ''
+    if ('lrlink' in fieldValues)
+      errorsUpd.lrlink = fieldValues.lrlink === '' ? 'This field is required.' : ''
+    if ('lrtype' in fieldValues)
+      errorsUpd.lrtype = fieldValues.lrtype === '' ? 'This field is required.' : ''
+    if ('lrwho' in fieldValues)
+      errorsUpd.lrwho = fieldValues.lrwho === '' ? 'This field is required.' : ''
     //
     //  Set the errors
     //
@@ -174,73 +174,73 @@ export default function ReflinksEntry(props) {
 
           <Grid item xs={8}>
             <MyInput
-              name='rref'
+              name='lrref'
               label='Reference'
-              value={values.rref}
+              value={values.lrref}
               onChange={handleInputChange}
-              error={errors.rref}
+              error={errors.lrref}
               disabled={actionUpdate}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           {actionUpdate ? (
             <Grid item xs={4}>
-              <MyInput name='rid' label='ID' value={values.rid} disabled={true} />
+              <MyInput name='lrid' label='ID' value={values.lrid} disabled={true} />
             </Grid>
           ) : null}
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={12}>
             <MySelect
               key={OptionsOwner.id}
-              name='rowner'
+              name='lrowner'
               label='Owner'
-              value={values.rowner}
+              value={values.lrowner}
               onChange={handleInputChange}
-              error={errors.rowner}
+              error={errors.lrowner}
               options={OptionsOwner}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={12}>
             <MySelect
-              key={OptionsGroup1.id}
-              name='rgroup1'
+              key={OptionsOwnerGroup.id}
+              name='lrgroup'
               label='Group'
-              value={values.rgroup1}
+              value={values.lrgroup}
               onChange={handleInputChange}
-              error={errors.rgroup1}
-              options={OptionsGroup1}
+              error={errors.lrgroup}
+              options={OptionsOwnerGroup}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={12}>
             <MyInput
-              name='rdesc'
+              name='lrdesc'
               label='Description'
-              value={values.rdesc}
+              value={values.lrdesc}
               onChange={handleInputChange}
-              error={errors.rdesc}
+              error={errors.lrdesc}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={12}>
             <MyInput
-              name='rlink'
+              name='lrlink'
               label='Link'
-              value={values.rlink}
+              value={values.lrlink}
               onChange={handleInputChange}
-              error={errors.rlink}
+              error={errors.lrlink}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={12}>
             <MySelect
               key={OptionsWho.id}
-              name='rwho'
+              name='lrwho'
               label='Who'
-              value={values.rwho}
+              value={values.lrwho}
               onChange={handleInputChange}
-              error={errors.rwho}
+              error={errors.lrwho}
               options={OptionsWho}
             />
           </Grid>
@@ -248,11 +248,11 @@ export default function ReflinksEntry(props) {
           <Grid item xs={12}>
             <MySelect
               key={OptionsType.id}
-              name='rtype'
+              name='lrtype'
               label='Type'
-              value={values.rtype}
+              value={values.lrtype}
               onChange={handleInputChange}
-              error={errors.rtype}
+              error={errors.lrtype}
               options={OptionsType}
             />
           </Grid>

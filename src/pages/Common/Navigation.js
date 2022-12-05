@@ -72,14 +72,14 @@ export default function Navigation({ handlePage }) {
           ></MyActionButton>
         ) : null}
         {/* .......................................................................................... */}
-        {CurrentPage !== 'Group1List' ? (
+        {CurrentPage !== 'OwnerGroupList' ? (
           <MyActionButton
             startIcon={<GroupIcon fontSize='medium' />}
             variant='contained'
             color='warning'
-            text='Group1'
+            text='OwnerGroup'
             onClick={() => {
-              handlePage('Group1List')
+              handlePage('OwnerGroupList')
             }}
           ></MyActionButton>
         ) : null}
@@ -108,14 +108,14 @@ export default function Navigation({ handlePage }) {
           ></MyActionButton>
         ) : null}
         {/* .......................................................................................... */}
-        {CurrentPage !== 'ReflinksList' ? (
+        {CurrentPage !== 'LibraryList' ? (
           <MyActionButton
             startIcon={<QuizIcon fontSize='medium' />}
             variant='contained'
             color='warning'
-            text='Reflinks'
+            text='Library'
             onClick={() => {
-              handlePage('ReflinksList')
+              handlePage('LibraryList')
             }}
           ></MyActionButton>
         ) : null}

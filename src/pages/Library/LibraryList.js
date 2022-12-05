@@ -1,4 +1,4 @@
-//
+////
 //  Libraries
 //
 import { useState, useEffect } from 'react'
@@ -14,7 +14,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 //
 //  Pages
 //
-import ReflinksEntry from './ReflinksEntry'
+import LibraryEntry from './LibraryEntry'
 //
 //  Controls
 //
@@ -71,29 +71,29 @@ const useStyles = makeStyles(theme => ({
 //  Table
 //
 const { SQL_ROWS } = require('../../services/constants.js')
-const sqlTable = 'reflinks'
+const sqlTable = 'library'
 //
 //  Table Heading
 //
 const headCells = [
-  { id: 'rid', label: 'ID' },
-  { id: 'rref', label: 'Reference' },
-  { id: 'rdesc', label: 'Description' },
-  { id: 'rowner', label: 'Owner' },
-  { id: 'rgroup1', label: 'Group' },
-  { id: 'rlink', label: 'Link' },
-  { id: 'rwho', label: 'Who' },
+  { id: 'lrid', label: 'ID' },
+  { id: 'lrref', label: 'Reference' },
+  { id: 'lrdesc', label: 'Description' },
+  { id: 'lrowner', label: 'Owner' },
+  { id: 'lrgroup', label: 'Group' },
+  { id: 'lrlink', label: 'Link' },
+  { id: 'lrwho', label: 'Who' },
   { id: 'rtype', label: 'Type' },
   { id: 'actions', label: 'Actions', disableSorting: true }
 ]
 const searchTypeOptions = [
-  { id: 'rid', title: 'ID' },
-  { id: 'rowner', title: 'Owner' },
-  { id: 'rgroup1', title: 'Group' },
-  { id: 'rref', title: 'Reference' },
-  { id: 'rdesc', title: 'Description' },
-  { id: 'rlink', title: 'Link' },
-  { id: 'rwho', title: 'Who' },
+  { id: 'lrid', title: 'ID' },
+  { id: 'lrowner', title: 'Owner' },
+  { id: 'lrgroup', title: 'Group' },
+  { id: 'lrref', title: 'Reference' },
+  { id: 'lrdesc', title: 'Description' },
+  { id: 'lrlink', title: 'Link' },
+  { id: 'lrwho', title: 'Who' },
   { id: 'rtype', title: 'Type' }
 ]
 //
@@ -101,11 +101,11 @@ const searchTypeOptions = [
 //
 const debugLog = debugSettings()
 const debugFunStart = false
-const debugModule = 'ReflinksList'
+const debugModule = 'LibraryList'
 //.............................................................................
 //.  Main Line
 //.............................................................................
-export default function ReflinksList() {
+export default function LibraryList() {
   if (debugFunStart) console.log(debugModule)
   //
   //  Styles
@@ -122,7 +122,7 @@ export default function ReflinksList() {
     }
   })
   const [openPopup, setOpenPopup] = useState(false)
-  const [searchType, setSearchType] = useState('rref')
+  const [searchType, setSearchType] = useState('lrref')
   const [searchValue, setSearchValue] = useState('')
   const [serverMessage, setServerMessage] = useState('')
   //
@@ -164,7 +164,7 @@ export default function ReflinksList() {
     //
     //  Process promise
     //
-    let sqlString = `* from ${sqlTable} order by rid FETCH FIRST ${SQL_ROWS} ROWS ONLY`
+    let sqlString = `* from ${sqlTable} order by lrid FETCH FIRST ${SQL_ROWS} ROWS ONLY`
     const rowCrudparams = {
       axiosMethod: 'post',
       sqlCaller: debugModule,
@@ -196,7 +196,7 @@ export default function ReflinksList() {
   //.............................................................................
   //.  DELETE
   //.............................................................................
-  const deleteRowData = rid => {
+  const deleteRowData = lrid => {
     if (debugFunStart) console.log('deleteRowData')
     //
     //  Process promise
@@ -206,7 +206,7 @@ export default function ReflinksList() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'DELETE',
-      sqlWhere: `rid = '${rid}'`
+      sqlWhere: `lrid = '${lrid}'`
     }
     const myPromiseDelete = rowCrud(rowCrudparams)
     //
@@ -238,7 +238,7 @@ export default function ReflinksList() {
     //
     //  Strip out KEY as it will be populated by Insert
     //
-    let { rid, ...nokeyData } = data
+    let { lrid, ...nokeyData } = data
     if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
     //
     //  Process promise
@@ -248,7 +248,7 @@ export default function ReflinksList() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'INSERT',
-      sqlKeyName: ['rref'],
+      sqlKeyName: ['lrref'],
       sqlRow: nokeyData
     }
     const myPromiseInsert = rowCrud(rowCrudparams)
@@ -295,7 +295,7 @@ export default function ReflinksList() {
     //
     //  Strip out KEY as it is not updated
     //
-    let { rid, ...nokeyData } = data
+    let { lrid, ...nokeyData } = data
     if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
     //
     //  Process promise
@@ -305,7 +305,7 @@ export default function ReflinksList() {
       sqlCaller: debugModule,
       sqlTable: sqlTable,
       sqlAction: 'UPDATE',
-      sqlWhere: `rid = '${rid}'`,
+      sqlWhere: `lrid = '${lrid}'`,
       sqlRow: nokeyData
     }
     const myPromiseUpdate = rowCrud(rowCrudparams)
@@ -341,18 +341,18 @@ export default function ReflinksList() {
     return myPromiseUpdate
   }
   //.............................................................................
-  //  Update the Reflinks Options
+  //  Update the Library Options
   //.............................................................................
   function updateOptions() {
     //
     //  Create options
     //
     createOptions({
-      cop_sqlTable: 'reflinks',
-      cop_id: 'rref',
-      cop_title: 'rdesc',
-      cop_store: 'Data_Options_Reflinks',
-      cop_received: 'Data_Options_Reflinks_Received'
+      cop_sqlTable: 'library',
+      cop_id: 'lrref',
+      cop_title: 'lrdesc',
+      cop_store: 'Data_Options_Library',
+      cop_received: 'Data_Options_Library_Received'
     })
   }
   //.............................................................................
@@ -373,37 +373,37 @@ export default function ReflinksList() {
         //
         let itemsFilter = items
         switch (searchType) {
-          case 'rid':
-            itemsFilter = items.filter(x => x.rid === parseInt(searchValue))
+          case 'lrid':
+            itemsFilter = items.filter(x => x.lrid === parseInt(searchValue))
             break
-          case 'rowner':
+          case 'lrowner':
             itemsFilter = items.filter(x =>
-              x.rowner.toLowerCase().includes(searchValue.toLowerCase())
+              x.lrowner.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-          case 'rgroup1':
+          case 'lrgroup':
             itemsFilter = items.filter(x =>
-              x.rgroup1.toLowerCase().includes(searchValue.toLowerCase())
+              x.lrgroup.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-          case 'rref':
+          case 'lrref':
             itemsFilter = items.filter(x =>
-              x.rref.toLowerCase().includes(searchValue.toLowerCase())
+              x.lrref.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-          case 'rdesc':
+          case 'lrdesc':
             itemsFilter = items.filter(x =>
-              x.rdesc.toLowerCase().includes(searchValue.toLowerCase())
+              x.lrdesc.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-          case 'rlink':
+          case 'lrlink':
             itemsFilter = items.filter(x =>
-              x.rlink.toLowerCase().includes(searchValue.toLowerCase())
+              x.lrlink.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-          case 'rwho':
+          case 'lrwho':
             itemsFilter = items.filter(x =>
-              x.rwho.toLowerCase().includes(searchValue.toLowerCase())
+              x.lrwho.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
           case 'rtype':
@@ -444,13 +444,13 @@ export default function ReflinksList() {
   //.............................................................................
   //  Delete Row
   //.............................................................................
-  const onDelete = rid => {
+  const onDelete = lrid => {
     if (debugFunStart) console.log('onDelete')
     setConfirmDialog({
       ...confirmDialog,
       isOpen: false
     })
-    deleteRowData(rid)
+    deleteRowData(lrid)
     setNotify({
       isOpen: true,
       message: 'Deleted Successfully',
@@ -463,7 +463,7 @@ export default function ReflinksList() {
   return (
     <>
       <PageHeader
-        title='Reflinks'
+        title='Library'
         subTitle='Data Entry and Maintenance'
         icon={<PeopleOutlineTwoToneIcon fontSize='large' />}
       />
@@ -524,14 +524,14 @@ export default function ReflinksList() {
           <TblHead />
           <TableBody>
             {recordsAfterPagingAndSorting().map(row => (
-              <TableRow key={row.rid}>
-                <TableCell>{row.rid}</TableCell>
-                <TableCell>{row.rref}</TableCell>
-                <TableCell>{row.rdesc}</TableCell>
-                <TableCell>{row.rowner}</TableCell>
-                <TableCell>{row.rgroup1}</TableCell>
-                <TableCell>{row.rlink}</TableCell>
-                <TableCell>{row.rwho}</TableCell>
+              <TableRow key={row.lrid}>
+                <TableCell>{row.lrid}</TableCell>
+                <TableCell>{row.lrref}</TableCell>
+                <TableCell>{row.lrdesc}</TableCell>
+                <TableCell>{row.lrowner}</TableCell>
+                <TableCell>{row.lrgroup}</TableCell>
+                <TableCell>{row.lrlink}</TableCell>
+                <TableCell>{row.lrwho}</TableCell>
                 <TableCell>{row.rtype}</TableCell>
 
                 <TableCell>
@@ -551,7 +551,7 @@ export default function ReflinksList() {
                         title: 'Are you sure to delete this record?',
                         subTitle: "You can't undo this operation",
                         onConfirm: () => {
-                          onDelete(row.rid)
+                          onDelete(row.lrid)
                         }
                       })
                     }}
@@ -564,7 +564,7 @@ export default function ReflinksList() {
         <TblPagination />
       </Paper>
       <Popup title='Reflink Form' openPopup={openPopup} setOpenPopup={setOpenPopup}>
-        <ReflinksEntry
+        <LibraryEntry
           recordForEdit={recordForEdit}
           addOrEdit={addOrEdit}
           serverMessage={serverMessage}

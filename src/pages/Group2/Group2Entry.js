@@ -153,7 +153,7 @@ export default function Group2Entry(props) {
               label='Title'
               value={values.g2title}
               onChange={handleInputChange}
-              error={errors.g1title}
+              error={errors.g2title}
             />
           </Grid>
           {/*.................................................................................................*/}

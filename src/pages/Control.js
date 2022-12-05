@@ -9,8 +9,8 @@ import QuestionList from './Question/QuestionList'
 import OwnerList from './Owner/OwnerList'
 import WhoList from './Who/WhoList'
 import UsersList from './Users/UsersList'
-import ReflinksList from './Reflinks/ReflinksList'
-import Group1List from './Group1/Group1List'
+import LibraryList from './Library/LibraryList'
+import OwnerGroupList from './OwnerGroup/OwnerGroupList'
 import Group2List from './Group2/Group2List'
 import Group3List from './Group3/Group3List'
 //
@@ -39,14 +39,14 @@ function Control() {
       return <QuestionList />
     case 'OwnerList':
       return <OwnerList />
-    case 'ReflinksList':
-      return <ReflinksList />
+    case 'LibraryList':
+      return <LibraryList />
     case 'WhoList':
       return <WhoList />
     case 'UsersList':
       return <UsersList />
-    case 'Group1List':
-      return <Group1List />
+    case 'OwnerGroupList':
+      return <OwnerGroupList />
     case 'Group2List':
       return <Group2List />
     case 'Group3List':

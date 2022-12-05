@@ -9,7 +9,6 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 //  Options
 //
 import createOptions from '../utilities/createOptions'
-import OptionsGroup1Owner from '../services/options/OptionsGroup1Owner'
 //
 //  Debug Settings
 //
@@ -173,13 +172,13 @@ export default function App() {
       cop_store: 'Data_Options_Owner',
       cop_received: 'Data_Options_Owner_Received'
     })
-    const Promise_Group1Owner = OptionsGroup1Owner()
-    const Promise_Group1 = createOptions({
-      cop_sqlTable: 'group1',
-      cop_id: 'g1id',
-      cop_title: 'g1title',
-      cop_store: 'Data_Options_Group1',
-      cop_received: 'Data_Options_Group1_Received'
+    const Promise_OwnerGroup = createOptions({
+      cop_sqlTable: 'ownergroup',
+      cop_owner: 'ogowner',
+      cop_id: 'oggroup',
+      cop_title: 'ogtitle',
+      cop_store: 'Data_Options_OwnerGroup',
+      cop_received: 'Data_Options_OwnerGroup_Received'
     })
     const Promise_Group2 = createOptions({
       cop_sqlTable: 'group2',
@@ -195,12 +194,12 @@ export default function App() {
       cop_store: 'Data_Options_Group3',
       cop_received: 'Data_Options_Group3_Received'
     })
-    const Promise_Reflinks = createOptions({
-      cop_sqlTable: 'reflinks',
-      cop_id: 'rref',
-      cop_title: 'rdesc',
-      cop_store: 'Data_Options_Reflinks',
-      cop_received: 'Data_Options_Reflinks_Received'
+    const Promise_Library = createOptions({
+      cop_sqlTable: 'library',
+      cop_id: 'lrref',
+      cop_title: 'lrdesc',
+      cop_store: 'Data_Options_Library',
+      cop_received: 'Data_Options_Library_Received'
     })
     const Promise_Who = createOptions({
       cop_sqlTable: 'who',
@@ -214,11 +213,10 @@ export default function App() {
     //
     Promise.all([
       Promise_Owner,
-      Promise_Group1Owner,
-      Promise_Group1,
+      Promise_OwnerGroup,
       Promise_Group2,
       Promise_Group3,
-      Promise_Reflinks,
+      Promise_Library,
       Promise_Who
     ]).then(values => {
       if (debugLog) console.log(`Promise values ALL`, values)
