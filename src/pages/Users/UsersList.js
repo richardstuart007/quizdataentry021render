@@ -72,8 +72,9 @@ const sqlTable = 'users'
 //
 const headCells = [
   { id: 'u_id', label: 'ID' },
-  { id: 'u_email', label: 'Email' },
+  { id: 'u_user', label: 'User' },
   { id: 'u_name', label: 'Name' },
+  { id: 'u_email', label: 'Email' },
   { id: 'u_fedid', label: 'Bridge ID' },
   { id: 'u_fedcountry', label: 'Country' },
   { id: 'u_dftmaxquestions', label: 'Max Questions' },
@@ -81,8 +82,9 @@ const headCells = [
   { id: 'actions', label: 'Actions', disableSorting: true }
 ]
 const searchTypeOptions = [
-  { id: 'u_email', title: 'Email' },
+  { id: 'u_user', title: 'User' },
   { id: 'u_name', title: 'Name' },
+  { id: 'u_email', title: 'Email' },
   { id: 'u_fedid', title: 'Bridge ID' }
 ]
 //
@@ -235,7 +237,7 @@ export default function UsersList() {
     //
     //  Strip out KEY as it is not updated
     //
-    let { u_id, ...nokeyData } = data
+    let { u_id, u_user, ...nokeyData } = data
     if (debugLog) console.log('Upsert Database nokeyData ', nokeyData)
     //
     //  Process promise
@@ -343,12 +345,16 @@ export default function UsersList() {
               x.u_name.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
+          case 'u_user':
+            itemsFilter = items.filter(x =>
+              x.u_user.toLowerCase().includes(searchValue.toLowerCase())
+            )
+            break
           case 'u_fedid':
             itemsFilter = items.filter(x =>
               x.u_fedid.toLowerCase().includes(searchValue.toLowerCase())
             )
             break
-
           default:
         }
         if (debugLog) console.log('itemsFilter ', itemsFilter)
@@ -479,8 +485,9 @@ export default function UsersList() {
             {recordsAfterPagingAndSorting().map(row => (
               <TableRow key={row.u_id}>
                 <TableCell>{row.u_id}</TableCell>
-                <TableCell>{row.u_email}</TableCell>
+                <TableCell>{row.u_user}</TableCell>
                 <TableCell>{row.u_name}</TableCell>
+                <TableCell>{row.u_email}</TableCell>
                 <TableCell>{row.u_fedid}</TableCell>
                 <TableCell>{row.u_fedcountry}</TableCell>
                 <TableCell>{row.u_dftmaxquestions}</TableCell>

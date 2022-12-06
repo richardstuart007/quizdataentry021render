@@ -34,7 +34,7 @@ const initialFValues = {
 //
 //  Global Variable
 //
-let actionUpdate = false
+let actionUpdate = true
 //
 // Debug Settings
 //
@@ -69,15 +69,9 @@ export default function UsersEntry(props) {
     // eslint-disable-next-line
   }, [recordForEdit])
   //
-  //  Disable/Allow entry
-  //
-  recordForEdit === null ? (actionUpdate = false) : (actionUpdate = true)
-  if (debugLog) console.log('actionUpdate', actionUpdate)
-  //
   //  Button Text
   //
-  let submitButtonText
-  actionUpdate ? (submitButtonText = 'Update') : (submitButtonText = 'Add')
+  let submitButtonText = 'Update'
   //
   //  Get Store
   //
@@ -162,15 +156,25 @@ export default function UsersEntry(props) {
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={6}>
             <MyInput
-              name='u_email'
-              label='Email'
-              value={values.u_email}
+              name='u_id'
+              label='ID'
+              value={values.u_id}
               onChange={handleInputChange}
-              error={errors.u_email}
+              error={errors.u_id}
               disabled={actionUpdate}
             />
           </Grid>
-
+          <Grid item xs={6}>
+            <MyInput
+              name='u_user'
+              label='User'
+              value={values.u_user}
+              onChange={handleInputChange}
+              error={errors.u_user}
+              disabled={actionUpdate}
+            />
+          </Grid>
+          {/*------------------------------------------------------------------------------ */}
           <Grid item xs={6}>
             <MyInput
               name='u_name'
@@ -178,6 +182,15 @@ export default function UsersEntry(props) {
               value={values.u_name}
               onChange={handleInputChange}
               error={errors.u_name}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <MyInput
+              name='u_email'
+              label='Email'
+              value={values.u_email}
+              onChange={handleInputChange}
+              error={errors.u_email}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
