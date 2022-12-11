@@ -18,6 +18,7 @@ import BiddingEntry from './BiddingEntry'
 import MyButton from '../../components/controls/MyButton'
 import MyInput from '../../components/controls/MyInput'
 import MySelect from '../../components/controls/MySelect'
+import MyAutocomplete from '../../components/controls/MyAutocomplete'
 import { useMyForm, MyForm } from '../../components/useMyForm'
 //
 //  Components
@@ -320,6 +321,23 @@ export default function QuestionEntry(props) {
     })
   }
   //...................................................................................
+  //.  Update form values with selected
+  //...................................................................................
+  function handleAutoSelect(code, fieldname) {
+    if (debugLog) console.log('handleAutoSelect')
+    if (debugLog) console.log('CountryCode ', code)
+    //
+    //  Populate Country Object & change country code
+    //
+    const updValues = { ...values }
+    updValues[fieldname] = code
+    if (debugLog) console.log('updValues ', updValues)
+    //
+    //  Update values
+    //
+    setValues(updValues)
+  }
+  //...................................................................................
   //.  Render the form
   //...................................................................................
   return (
@@ -446,26 +464,27 @@ export default function QuestionEntry(props) {
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}
-          <Grid item xs={6}>
-            <MySelect
-              key={Data_Options_Library.id}
-              name='qrefs1'
-              label='Reference 1'
-              value={values.qrefs1}
-              onChange={handleInputChange}
-              error={errors.qrefs1}
+          <Grid item xs={12}>
+            <MyAutocomplete
+              searchLable='Library Reference 1'
+              onChange={handleAutoSelect}
+              fieldname={'qrefs1'}
+              optionId={values.qrefs1}
               options={Data_Options_Library}
+              required={false}
+              fullWidth={true}
             />
           </Grid>
-          <Grid item xs={6}>
-            <MySelect
-              key={Data_Options_Library.id}
-              name='qrefs2'
-              label='Reference 2'
-              value={values.qrefs2}
-              onChange={handleInputChange}
-              error={errors.qrefs2}
+          {/*------------------------------------------------------------------------------ */}
+          <Grid item xs={12}>
+            <MyAutocomplete
+              searchLable='Library Reference 2'
+              onChange={handleAutoSelect}
+              fieldname={'qrefs2'}
+              optionId={values.qrefs2}
               options={Data_Options_Library}
+              required={false}
+              fullWidth={true}
             />
           </Grid>
           {/*------------------------------------------------------------------------------ */}

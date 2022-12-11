@@ -15,6 +15,7 @@ import MyInput from '../../components/controls/MyInput'
 import MyCheckbox from '../../components/controls/MyCheckbox'
 import MySelect from '../../components/controls/MySelect'
 import { useMyForm, MyForm } from '../../components/useMyForm'
+import SelectCountry from './SelectCountry'
 //
 //  Form Initial Values
 //
@@ -41,7 +42,6 @@ let actionUpdate = true
 const debugLog = debugSettings()
 const debugFunStart = false
 const debugModule = 'UsersEntry'
-
 //...................................................................................
 //.  Main Line
 //...................................................................................
@@ -76,12 +76,20 @@ export default function UsersEntry(props) {
   //  Get Store
   //
   const OptionsOwner = JSON.parse(sessionStorage.getItem('Data_Options_Owner'))
-  if (debugLog) console.log('OptionsOwner ', OptionsOwner)
+  //
+  //  UseMyForm
+  //
+  initialFValues.u_fedcountry = recordForEdit.u_fedcountry
+  const { values, setValues, errors, setErrors, handleInputChange, resetForm } = useMyForm(
+    initialFValues,
+    true,
+    validate
+  )
+  if (debugLog) console.log('values ', values)
   //...................................................................................
-  //
   // Validate the fields
-  //
-  const validate = (fieldValues = values) => {
+  //...................................................................................
+  function validate(fieldValues = values) {
     if (debugFunStart) console.log('validate')
     if (debugLog) console.log(fieldValues)
     //
@@ -117,18 +125,9 @@ export default function UsersEntry(props) {
     }
   }
   //...................................................................................
-  //
-  //  UseMyForm
-  //
-  const { values, setValues, errors, setErrors, handleInputChange, resetForm } = useMyForm(
-    initialFValues,
-    true,
-    validate
-  )
-  //...................................................................................
   //.  Submit form
   //...................................................................................
-  const handleSubmit = e => {
+  function handleSubmit(e) {
     if (debugFunStart) console.log('handleSubmit')
     e.preventDefault()
     //
@@ -145,7 +144,23 @@ export default function UsersEntry(props) {
       addOrEdit(UpdateValues, resetForm)
     }
   }
-
+  //...................................................................................
+  //.  Debug
+  //...................................................................................
+  function handleSelectCountry(CountryCode) {
+    if (debugLog) console.log('handleSelectCountry')
+    if (debugLog) console.log('CountryCode ', CountryCode)
+    //
+    //  Populate Country Object & change country code
+    //
+    const updValues = { ...values }
+    updValues.u_fedcountry = CountryCode
+    if (debugLog) console.log('updValues ', updValues)
+    //
+    //  Update values
+    //
+    setValues(updValues)
+  }
   //...................................................................................
   //.  Render the form
   //...................................................................................
@@ -195,15 +210,11 @@ export default function UsersEntry(props) {
           </Grid>
           {/*------------------------------------------------------------------------------ */}
           <Grid item xs={6}>
-            <Box sx={{ mt: 2, maxWidth: 200 }}>
-              <MyInput
-                name='u_fedcountry'
-                label='Bridge Federation Country'
-                value={values.u_fedcountry}
-                onChange={handleInputChange}
-                error={errors.u_fedcountry}
-              />
-            </Box>
+            <SelectCountry
+              label='Bridge Federation Country1'
+              onChange={handleSelectCountry}
+              countryCode={values.u_fedcountry}
+            />
           </Grid>
 
           <Grid item xs={6}>

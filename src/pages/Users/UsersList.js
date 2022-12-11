@@ -369,6 +369,7 @@ export default function UsersList() {
   //
   const addOrEdit = (row, resetForm) => {
     if (debugFunStart) console.log('addOrEdit')
+    if (debugLog) console.log('row ', row)
     updateRowData(row)
 
     setNotify({
